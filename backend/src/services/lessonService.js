@@ -1,245 +1,133 @@
 const {
-    LessonProgress,
     Lesson,
     Course,
     Enrollment
 } = require("../models");
 
+const path = require("path");
+const fs = require("fs");
+
 
 // =====================================================
-// CHECK STUDENT ENROLLMENT
+// GET LESSONS BY COURSE
 // =====================================================
 
-const checkStudentEnrollment = async (
-    studentId,
-    courseId
-) => {
+const getLessonsByCourse = async (courseId) => {
 
-    const enrollment =
-        await Enrollment.findOne({
-            where: {
-                student_id: studentId,
-                course_id: courseId,
-                status: "active"
-            }
-        });
+    const course = await Course.findByPk(courseId);
 
-    return !!enrollment;
+    if (!course) {
+        throw new Error("Không tìm thấy khóa học");
+    }
+
+    const lessons = await Lesson.findAll({
+        where: {
+            course_id: courseId
+        },
+        order: [
+            ["lesson_order", "ASC"],
+            ["id", "ASC"]
+        ]
+    });
+
+    return lessons;
 };
 
 
 // =====================================================
-// GET LESSON PROGRESS
+// GET LESSON BY ID
 // =====================================================
 
-const getLessonProgress = async (
-    studentId,
-    lessonId
-) => {
+const getLessonById = async (lessonId) => {
 
-    const lesson =
-        await Lesson.findByPk(lessonId);
+    const lesson = await Lesson.findByPk(lessonId);
 
     if (!lesson) {
-        throw new Error(
-            "Không tìm thấy bài học"
-        );
+        throw new Error("Không tìm thấy bài học");
     }
 
-
-    // -----------------------------------------
-    // Kiểm tra học viên đã đăng ký khóa học
-    // -----------------------------------------
-
-    const isEnrolled =
-        await checkStudentEnrollment(
-            studentId,
-            lesson.course_id
-        );
-
-    if (!isEnrolled) {
-        throw new Error(
-            "Bạn chưa đăng ký khóa học này"
-        );
-    }
-
-
-    // -----------------------------------------
-    // Tìm progress
-    // -----------------------------------------
-
-    let progress =
-        await LessonProgress.findOne({
-            where: {
-                student_id: studentId,
-                lesson_id: lessonId
-            }
-        });
-
-
-    // -----------------------------------------
-    // Nếu chưa có → tạo mới
-    // -----------------------------------------
-
-    if (!progress) {
-
-        progress =
-            await LessonProgress.create({
-                student_id: studentId,
-                lesson_id: lessonId,
-                watched_seconds: 0,
-                is_completed: false
-            });
-    }
-
-
-    return progress;
+    return lesson;
 };
 
 
 // =====================================================
-// UPDATE LESSON PROGRESS
+// CREATE LESSON
 // =====================================================
 
-const updateLessonProgress = async ({
-    studentId,
-    lessonId,
-    watchedSeconds,
-    isCompleted
+const createLesson = async ({
+    courseId,
+    teacherId,
+    title,
+    description,
+    lessonOrder,
+    isPreview
 }) => {
 
-    const lesson =
-        await Lesson.findByPk(lessonId);
+    const course = await Course.findByPk(courseId);
 
-    if (!lesson) {
-        throw new Error(
-            "Không tìm thấy bài học"
-        );
+    if (!course) {
+        throw new Error("Không tìm thấy khóa học");
     }
 
 
     // -----------------------------------------
-    // Kiểm tra enrollment
-    // -----------------------------------------
-
-    const isEnrolled =
-        await checkStudentEnrollment(
-            studentId,
-            lesson.course_id
-        );
-
-    if (!isEnrolled) {
-        throw new Error(
-            "Bạn chưa đăng ký khóa học này"
-        );
-    }
-
-
-    // -----------------------------------------
-    // Validate watched_seconds
+    // Kiểm tra quyền giáo viên
     // -----------------------------------------
 
     if (
-        watchedSeconds !== undefined &&
-        (
-            !Number.isInteger(
-                Number(watchedSeconds)
-            ) ||
-            Number(watchedSeconds) < 0
-        )
+        course.teacher_id !== teacherId
     ) {
         throw new Error(
-            "watched_seconds không hợp lệ"
+            "Bạn không có quyền thêm bài học vào khóa học này"
         );
     }
 
 
-    // -----------------------------------------
-    // Tìm hoặc tạo progress
-    // -----------------------------------------
+    const lesson = await Lesson.create({
 
-    let progress =
-        await LessonProgress.findOne({
-            where: {
-                student_id: studentId,
-                lesson_id: lessonId
-            }
-        });
+        course_id: courseId,
 
+        title,
 
-    if (!progress) {
+        description:
+            description || null,
 
-        progress =
-            await LessonProgress.create({
-                student_id: studentId,
-                lesson_id: lessonId,
-                watched_seconds:
-                    Number(watchedSeconds || 0),
-                is_completed:
-                    Boolean(isCompleted),
-                completed_at:
-                    isCompleted
-                        ? new Date()
-                        : null
-            });
+        lesson_order:
+            lessonOrder || 1,
 
-    } else {
-
-        const updateData = {};
+        is_preview:
+            Boolean(isPreview)
+    });
 
 
-        if (watchedSeconds !== undefined) {
-
-            updateData.watched_seconds =
-                Number(watchedSeconds);
-        }
-
-
-        if (isCompleted !== undefined) {
-
-            updateData.is_completed =
-                Boolean(isCompleted);
-
-
-            if (Boolean(isCompleted)) {
-
-                updateData.completed_at =
-                    progress.completed_at ||
-                    new Date();
-
-            } else {
-
-                updateData.completed_at =
-                    null;
-            }
-        }
-
-
-        await progress.update(
-            updateData
-        );
-    }
-
-
-    return progress;
+    return lesson;
 };
 
 
 // =====================================================
-// GET COURSE PROGRESS
+// UPDATE LESSON
 // =====================================================
 
-const getCourseProgress = async ({
-    studentId,
-    courseId
-}) => {
+const updateLesson = async (
+    lessonId,
+    teacherId,
+    data
+) => {
 
-    // -----------------------------------------
-    // Kiểm tra course
-    // -----------------------------------------
+    const lesson =
+        await Lesson.findByPk(lessonId);
+
+    if (!lesson) {
+        throw new Error(
+            "Không tìm thấy bài học"
+        );
+    }
+
 
     const course =
-        await Course.findByPk(courseId);
+        await Course.findByPk(
+            lesson.course_id
+        );
 
     if (!course) {
         throw new Error(
@@ -248,149 +136,297 @@ const getCourseProgress = async ({
     }
 
 
-    // -----------------------------------------
-    // Kiểm tra enrollment
-    // -----------------------------------------
+    if (
+        course.teacher_id !== teacherId
+    ) {
+        throw new Error(
+            "Bạn không có quyền sửa bài học này"
+        );
+    }
 
-    const isEnrolled =
-        await checkStudentEnrollment(
-            studentId,
-            courseId
+
+    const updateData = {};
+
+
+    if (data.title !== undefined) {
+        updateData.title = data.title;
+    }
+
+
+    if (data.description !== undefined) {
+        updateData.description =
+            data.description;
+    }
+
+
+    if (data.lessonOrder !== undefined) {
+        updateData.lesson_order =
+            data.lessonOrder;
+    }
+
+
+    if (data.isPreview !== undefined) {
+        updateData.is_preview =
+            Boolean(data.isPreview);
+    }
+
+
+    await lesson.update(
+        updateData
+    );
+
+
+    return lesson;
+};
+
+
+// =====================================================
+// DELETE LESSON
+// =====================================================
+
+const deleteLesson = async (
+    lessonId,
+    teacherId
+) => {
+
+    const lesson =
+        await Lesson.findByPk(lessonId);
+
+    if (!lesson) {
+        throw new Error(
+            "Không tìm thấy bài học"
+        );
+    }
+
+
+    const course =
+        await Course.findByPk(
+            lesson.course_id
         );
 
-    if (!isEnrolled) {
+    if (!course) {
+        throw new Error(
+            "Không tìm thấy khóa học"
+        );
+    }
+
+
+    if (
+        course.teacher_id !== teacherId
+    ) {
+        throw new Error(
+            "Bạn không có quyền xóa bài học này"
+        );
+    }
+
+
+    await lesson.destroy();
+
+    return true;
+};
+
+
+// =====================================================
+// UPLOAD LESSON VIDEO
+// =====================================================
+
+const uploadLessonVideo = async (
+    lessonId,
+    teacherId,
+    file
+) => {
+
+    const lesson =
+        await Lesson.findByPk(
+            lessonId
+        );
+
+    if (!lesson) {
+        throw new Error(
+            "Không tìm thấy bài học"
+        );
+    }
+
+
+    const course =
+        await Course.findByPk(
+            lesson.course_id
+        );
+
+    if (!course) {
+        throw new Error(
+            "Không tìm thấy khóa học"
+        );
+    }
+
+
+    if (
+        course.teacher_id !== teacherId
+    ) {
+        throw new Error(
+            "Bạn không có quyền upload video"
+        );
+    }
+
+
+    if (!file) {
+        throw new Error(
+            "Vui lòng chọn file video"
+        );
+    }
+
+
+    // -----------------------------------------
+    // Xóa video cũ nếu có
+    // -----------------------------------------
+
+    if (lesson.video_url) {
+
+        const oldFilename =
+            path.basename(
+                lesson.video_url
+            );
+
+        const oldPath =
+            path.join(
+                process.cwd(),
+                "uploads",
+                "videos",
+                oldFilename
+            );
+
+        if (fs.existsSync(oldPath)) {
+            fs.unlinkSync(oldPath);
+        }
+    }
+
+
+    // -----------------------------------------
+    // Lưu đường dẫn video
+    // -----------------------------------------
+
+    const videoUrl =
+        `/uploads/videos/${file.filename}`;
+
+
+    await lesson.update({
+        video_url: videoUrl
+    });
+
+
+    return lesson;
+};
+
+
+// =====================================================
+// CHECK VIDEO ACCESS
+// =====================================================
+
+const getVideoAccess = async ({
+    lessonId,
+    user
+}) => {
+
+    const lesson =
+        await Lesson.findByPk(
+            lessonId
+        );
+
+    if (!lesson) {
+        throw new Error(
+            "Không tìm thấy bài học"
+        );
+    }
+
+
+    if (!lesson.video_url) {
+        throw new Error(
+            "Bài học chưa có video"
+        );
+    }
+
+
+    // -----------------------------------------
+    // Admin
+    // -----------------------------------------
+
+    if (user.role === "admin") {
+        return lesson;
+    }
+
+
+    // -----------------------------------------
+    // Teacher
+    // -----------------------------------------
+
+    if (user.role === "teacher") {
+
+        const course =
+            await Course.findByPk(
+                lesson.course_id
+            );
+
+        if (
+            course &&
+            course.teacher_id === user.id
+        ) {
+            return lesson;
+        }
+    }
+
+
+    // -----------------------------------------
+    // Preview lesson
+    // -----------------------------------------
+
+    if (lesson.is_preview) {
+        return lesson;
+    }
+
+
+    // -----------------------------------------
+    // Student phải đăng ký
+    // -----------------------------------------
+
+    const enrollment =
+        await Enrollment.findOne({
+            where: {
+                student_id: user.id,
+                course_id: lesson.course_id,
+                status: "active"
+            }
+        });
+
+
+    if (!enrollment) {
         throw new Error(
             "Bạn chưa đăng ký khóa học này"
         );
     }
 
 
-    // -----------------------------------------
-    // Lấy toàn bộ lesson
-    // -----------------------------------------
-
-    const lessons =
-        await Lesson.findAll({
-            where: {
-                course_id: courseId
-            },
-
-            order: [
-                ["lesson_order", "ASC"],
-                ["id", "ASC"]
-            ]
-        });
-
-
-    // -----------------------------------------
-    // Lấy progress
-    // -----------------------------------------
-
-    const progressList =
-        await LessonProgress.findAll({
-            where: {
-                student_id: studentId
-            },
-
-            include: [
-                {
-                    model: Lesson,
-                    as: "lesson",
-
-                    where: {
-                        course_id: courseId
-                    }
-                }
-            ]
-        });
-
-
-    // -----------------------------------------
-    // Tính số bài hoàn thành
-    // -----------------------------------------
-
-    const totalLessons =
-        lessons.length;
-
-    const completedLessons =
-        progressList.filter(
-            progress =>
-                progress.is_completed
-        ).length;
-
-
-    // -----------------------------------------
-    // Tính %
-    // -----------------------------------------
-
-    const progressPercentage =
-        totalLessons === 0
-            ? 0
-            : Math.round(
-                (
-                    completedLessons /
-                    totalLessons
-                ) * 100
-            );
-
-
-    return {
-
-        courseId: courseId,
-
-        totalLessons,
-
-        completedLessons,
-
-        progress: progressPercentage,
-
-        lessons: lessons.map(
-            lesson => {
-
-                const progress =
-                    progressList.find(
-                        item =>
-                            item.lesson_id ===
-                            lesson.id
-                    );
-
-
-                return {
-
-                    lessonId: lesson.id,
-
-                    title: lesson.title,
-
-                    lessonOrder:
-                        lesson.lesson_order,
-
-                    watchedSeconds:
-                        progress
-                            ? progress.watched_seconds
-                            : 0,
-
-                    isCompleted:
-                        progress
-                            ? progress.is_completed
-                            : false,
-
-                    completedAt:
-                        progress
-                            ? progress.completed_at
-                            : null
-                };
-            }
-        )
-    };
+    return lesson;
 };
 
 
+// =====================================================
+// EXPORT
+// =====================================================
+
 module.exports = {
 
-    getLessonProgress,
+    getLessonsByCourse,
 
-    updateLessonProgress,
+    getLessonById,
 
-    getCourseProgress
+    createLesson,
+
+    updateLesson,
+
+    deleteLesson,
+
+    uploadLessonVideo,
+
+    getVideoAccess
 
 };

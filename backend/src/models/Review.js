@@ -21,9 +21,8 @@ const Review = sequelize.define(
         },
 
         rating: {
-            type: DataTypes.TINYINT,
+            type: DataTypes.INTEGER,
             allowNull: false,
-
             validate: {
                 min: 1,
                 max: 5
@@ -36,7 +35,10 @@ const Review = sequelize.define(
         }
     },
     {
-        tableName: "reviews"
+        tableName: "reviews",
+        timestamps: true,
+        createdAt: "created_at",
+        updatedAt: "updated_at"
     }
 );
 

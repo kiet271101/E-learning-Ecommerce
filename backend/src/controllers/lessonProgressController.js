@@ -1,5 +1,5 @@
-const lessonProgressService =
-    require("../services/lessonProgressService");
+const progressService =
+    require("../services/progressService");
 
 
 // =====================================================
@@ -30,7 +30,7 @@ const getLessonProgress = async (
 
 
         const progress =
-            await lessonProgressService
+            await progressService
                 .getLessonProgress(
                     req.user.id,
                     req.params.lessonId
@@ -46,6 +46,11 @@ const getLessonProgress = async (
         });
 
     } catch (error) {
+
+        console.error(
+            "GET LESSON PROGRESS ERROR:",
+            error
+        );
 
         return res.status(400).json({
 
@@ -92,7 +97,7 @@ const updateLessonProgress = async (
 
 
         const progress =
-            await lessonProgressService
+            await progressService
                 .updateLessonProgress({
 
                     studentId:
@@ -122,6 +127,11 @@ const updateLessonProgress = async (
         });
 
     } catch (error) {
+
+        console.error(
+            "UPDATE LESSON PROGRESS ERROR:",
+            error
+        );
 
         return res.status(400).json({
 
@@ -162,7 +172,7 @@ const getCourseProgress = async (
 
 
         const result =
-            await lessonProgressService
+            await progressService
                 .getCourseProgress({
 
                     studentId:
@@ -183,6 +193,11 @@ const getCourseProgress = async (
         });
 
     } catch (error) {
+
+        console.error(
+            "GET COURSE PROGRESS ERROR:",
+            error
+        );
 
         return res.status(400).json({
 

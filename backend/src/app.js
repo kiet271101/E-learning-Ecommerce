@@ -12,6 +12,7 @@ const enrollmentRoutes = require("./routes/enrollmentRoutes");
 const orderRoutes = require("./routes/orderRoutes");
 const paymentRoutes = require("./routes/paymentRoutes");
 const lessonProgressRoutes = require("./routes/lessonProgressRoutes");
+const reviewRoutes = require("./routes/reviewRoutes");
 
 const app = express();
 
@@ -40,6 +41,7 @@ app.use("/api/enrollments", enrollmentRoutes);
 app.use("/api/orders", orderRoutes);
 app.use("/api/payments", paymentRoutes);
 app.use("/api/progress", lessonProgressRoutes);
+app.use("/api/reviews", reviewRoutes);
 
 app.get("/api", (req, res) => {
     res.json({
