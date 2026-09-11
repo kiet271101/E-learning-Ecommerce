@@ -34,6 +34,87 @@ const getCourses = async (
     }
 };
 
+const getMyCourses = async (
+    req,
+    res
+) => {
+
+    try {
+
+        const result =
+            await courseService.getMyCourses({
+
+                ...req.query,
+
+                teacher_id:
+                    req.user.id
+            });
+
+
+        res.status(200).json({
+
+            success: true,
+
+            data: result.courses,
+
+            pagination:
+                result.pagination
+        });
+
+    } catch (error) {
+
+        res.status(500).json({
+
+            success: false,
+
+            message: error.message
+        });
+    }
+};
+
+// ==========================================
+// GET /api/courses/my-courses/:id
+// TEACHER
+// ==========================================
+
+const getMyCourseById = async (
+    req,
+    res
+) => {
+
+    try {
+
+        const course =
+            await courseService.getMyCourseById(
+
+                req.params.id,
+
+                req.user.id
+
+            );
+
+
+        res.status(200).json({
+
+            success: true,
+
+            data: course
+
+        });
+
+    } catch (error) {
+
+        res.status(404).json({
+
+            success: false,
+
+            message: error.message
+
+        });
+
+    }
+};
+
 
 // ==========================================
 // GET /api/courses/:id
@@ -231,6 +312,8 @@ const deleteCourse = async (
 
 module.exports = {
     getCourses,
+    getMyCourses,
+    getMyCourseById,
     getCourseById,
     createCourse,
     updateCourse,

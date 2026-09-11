@@ -1,30 +1,91 @@
 const express = require("express");
 
 const {
+
     getCourses,
+
+    getMyCourses,
+
+    getMyCourseById,
+
     getCourseById,
+
     createCourse,
+
     updateCourse,
+
     deleteCourse
+
 } = require("../controllers/courseController");
+
 
 const authMiddleware =
     require("../middleware/authMiddleware");
 
+
 const roleMiddleware =
     require("../middleware/roleMiddleware");
 
-const router = express.Router();
+
+const router =
+    express.Router();
 
 
 // ==========================================
 // PUBLIC
 // ==========================================
 
+// GET /api/courses
+// Chỉ lấy course published
+
 router.get(
     "/",
     getCourses
 );
+
+
+// ==========================================
+// TEACHER - MY COURSES
+// ==========================================
+
+// GET /api/courses/my-courses
+// Teacher xem course của mình
+// Bao gồm draft + published
+
+router.get(
+    "/my-courses",
+    authMiddleware,
+    roleMiddleware(
+        "teacher"
+    ),
+    getMyCourses
+);
+
+
+// ==========================================
+// TEACHER - MY COURSE DETAIL
+// ==========================================
+
+// GET /api/courses/my-courses/:id
+// Teacher xem chi tiết course của mình
+// Bao gồm draft + published
+
+router.get(
+    "/my-courses/:id",
+    authMiddleware,
+    roleMiddleware(
+        "teacher"
+    ),
+    getMyCourseById
+);
+
+
+// ==========================================
+// PUBLIC - COURSE DETAIL
+// ==========================================
+
+// GET /api/courses/:id
+// Chỉ xem course published
 
 router.get(
     "/:id",
@@ -36,6 +97,8 @@ router.get(
 // TEACHER / ADMIN
 // ==========================================
 
+// POST /api/courses
+
 router.post(
     "/",
     authMiddleware,
@@ -46,6 +109,9 @@ router.post(
     createCourse
 );
 
+
+// PUT /api/courses/:id
+
 router.put(
     "/:id",
     authMiddleware,
@@ -55,6 +121,9 @@ router.put(
     ),
     updateCourse
 );
+
+
+// DELETE /api/courses/:id
 
 router.delete(
     "/:id",

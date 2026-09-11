@@ -1,39 +1,32 @@
-const lessonService =
-    require("../services/lessonService");
-
+const lessonService = require("../services/lessonService");
 const fs = require("fs");
 const path = require("path");
 
 // ==========================================
-// GET LESSONS
+// GET LESSONS BY COURSE
 // ==========================================
 
-const getLessonsByCourse = async (
-    req,
-    res
-) => {
-
+const getLessonsByCourse = async (req, res) => {
     try {
-
         const lessons =
-            await lessonService
-                .getLessonsByCourse(
-                    req.params.courseId
-                );
+            await lessonService.getLessonsByCourse(
+                req.params.courseId
+            );
 
         res.status(200).json({
-
             success: true,
-
             data: lessons
         });
 
     } catch (error) {
 
+        console.error(
+            "GET LESSONS BY COURSE ERROR:",
+            error
+        );
+
         res.status(404).json({
-
             success: false,
-
             message: error.message
         });
     }
@@ -41,35 +34,31 @@ const getLessonsByCourse = async (
 
 
 // ==========================================
-// GET LESSON
+// GET LESSON BY ID
 // ==========================================
 
-const getLessonById = async (
-    req,
-    res
-) => {
-
+const getLessonById = async (req, res) => {
     try {
 
         const lesson =
-            await lessonService
-                .getLessonById(
-                    req.params.id
-                );
+            await lessonService.getLessonById(
+                req.params.id
+            );
 
         res.status(200).json({
-
             success: true,
-
             data: lesson
         });
 
     } catch (error) {
 
+        console.error(
+            "GET LESSON BY ID ERROR:",
+            error
+        );
+
         res.status(404).json({
-
             success: false,
-
             message: error.message
         });
     }
@@ -77,54 +66,60 @@ const getLessonById = async (
 
 
 // ==========================================
-// CREATE
+// CREATE LESSON
 // ==========================================
 
-const createLesson = async (
-    req,
-    res
-) => {
+const createLesson = async (req, res) => {
 
     try {
 
         const {
             title,
             description,
-            lessonOrder,
-            isPreview
+            duration,
+            lesson_order,
+            is_preview
         } = req.body;
 
+
+        // ==========================================
+        // VALIDATE TITLE
+        // ==========================================
 
         if (!title) {
 
             return res.status(400).json({
-
                 success: false,
-
-                message:
-                    "Tên bài học là bắt buộc"
+                message: "Tên bài học là bắt buộc"
             });
         }
 
 
+        // ==========================================
+        // CREATE LESSON
+        // ==========================================
+
         const lesson =
-            await lessonService
-                .createLesson({
+            await lessonService.createLesson({
 
-                    courseId:
-                        req.params.courseId,
+                courseId:
+                    req.params.courseId,
 
-                    teacherId:
-                        req.user.id,
+                teacherId:
+                    req.user.id,
 
-                    title,
+                title,
 
-                    description,
+                description,
 
-                    lessonOrder,
+                duration,
 
-                    isPreview
-                });
+                lessonOrder:
+                    lesson_order,
+
+                isPreview:
+                    is_preview
+            });
 
 
         res.status(201).json({
@@ -139,6 +134,11 @@ const createLesson = async (
 
     } catch (error) {
 
+        console.error(
+            "CREATE LESSON ERROR:",
+            error
+        );
+
         res.status(400).json({
 
             success: false,
@@ -150,26 +150,22 @@ const createLesson = async (
 
 
 // ==========================================
-// UPDATE
+// UPDATE LESSON
 // ==========================================
 
-const updateLesson = async (
-    req,
-    res
-) => {
+const updateLesson = async (req, res) => {
 
     try {
 
         const lesson =
-            await lessonService
-                .updateLesson(
+            await lessonService.updateLesson(
 
-                    req.params.id,
+                req.params.id,
 
-                    req.user.id,
+                req.user.id,
 
-                    req.body
-                );
+                req.body
+            );
 
 
         res.status(200).json({
@@ -184,6 +180,11 @@ const updateLesson = async (
 
     } catch (error) {
 
+        console.error(
+            "UPDATE LESSON ERROR:",
+            error
+        );
+
         res.status(400).json({
 
             success: false,
@@ -195,23 +196,19 @@ const updateLesson = async (
 
 
 // ==========================================
-// DELETE
+// DELETE LESSON
 // ==========================================
 
-const deleteLesson = async (
-    req,
-    res
-) => {
+const deleteLesson = async (req, res) => {
 
     try {
 
-        await lessonService
-            .deleteLesson(
+        await lessonService.deleteLesson(
 
-                req.params.id,
+            req.params.id,
 
-                req.user.id
-            );
+            req.user.id
+        );
 
 
         res.status(200).json({
@@ -224,6 +221,11 @@ const deleteLesson = async (
 
     } catch (error) {
 
+        console.error(
+            "DELETE LESSON ERROR:",
+            error
+        );
+
         res.status(400).json({
 
             success: false,
@@ -235,26 +237,22 @@ const deleteLesson = async (
 
 
 // ==========================================
-// UPLOAD VIDEO
+// UPLOAD LESSON VIDEO
 // ==========================================
 
-const uploadLessonVideo = async (
-    req,
-    res
-) => {
+const uploadLessonVideo = async (req, res) => {
 
     try {
 
         const lesson =
-            await lessonService
-                .uploadLessonVideo(
+            await lessonService.uploadLessonVideo(
 
-                    req.params.id,
+                req.params.id,
 
-                    req.user.id,
+                req.user.id,
 
-                    req.file
-                );
+                req.file
+            );
 
 
         res.status(200).json({
@@ -276,6 +274,11 @@ const uploadLessonVideo = async (
 
     } catch (error) {
 
+        console.error(
+            "UPLOAD LESSON VIDEO ERROR:",
+            error
+        );
+
         res.status(400).json({
 
             success: false,
@@ -285,40 +288,35 @@ const uploadLessonVideo = async (
     }
 };
 
-const streamVideo = async (
-    req,
-    res
-) => {
+
+// ==========================================
+// STREAM VIDEO
+// ==========================================
+
+const streamVideo = async (req, res) => {
 
     try {
-
-        // ----------------------------------
-        // 1. Kiểm tra quyền truy cập
-        // ----------------------------------
 
         const lesson =
             await lessonService.getVideoAccess({
 
-                lessonId: req.params.id,
+                lessonId:
+                    req.params.id,
 
-                user: req.user
-
+                user:
+                    req.user
             });
 
 
-        // ----------------------------------
-        // 2. Lấy tên file
-        // ----------------------------------
+        // ==========================================
+        // VIDEO FILE
+        // ==========================================
 
         const filename =
             path.basename(
                 lesson.video_url
             );
 
-
-        // ----------------------------------
-        // 3. Đường dẫn video
-        // ----------------------------------
 
         const videoPath =
             path.join(
@@ -329,9 +327,9 @@ const streamVideo = async (
             );
 
 
-        // ----------------------------------
-        // 4. Kiểm tra file
-        // ----------------------------------
+        // ==========================================
+        // CHECK FILE
+        // ==========================================
 
         if (!fs.existsSync(videoPath)) {
 
@@ -341,15 +339,13 @@ const streamVideo = async (
 
                 message:
                     "Không tìm thấy file video"
-
             });
-
         }
 
 
-        // ----------------------------------
-        // 5. Lấy thông tin file
-        // ----------------------------------
+        // ==========================================
+        // FILE INFORMATION
+        // ==========================================
 
         const stat =
             fs.statSync(videoPath);
@@ -358,9 +354,9 @@ const streamVideo = async (
             stat.size;
 
 
-        // ----------------------------------
-        // 6. Xác định MIME
-        // ----------------------------------
+        // ==========================================
+        // MIME TYPE
+        // ==========================================
 
         const ext =
             path.extname(
@@ -370,20 +366,26 @@ const streamVideo = async (
 
         const mimeTypes = {
 
-            ".mp4": "video/mp4",
+            ".mp4":
+                "video/mp4",
 
-            ".webm": "video/webm",
+            ".webm":
+                "video/webm",
 
-            ".mov": "video/quicktime",
+            ".mov":
+                "video/quicktime",
 
-            ".avi": "video/x-msvideo",
+            ".avi":
+                "video/x-msvideo",
 
-            ".mkv": "video/x-matroska",
+            ".mkv":
+                "video/x-matroska",
 
-            ".mpeg": "video/mpeg",
+            ".mpeg":
+                "video/mpeg",
 
-            ".mpg": "video/mpeg"
-
+            ".mpg":
+                "video/mpeg"
         };
 
 
@@ -392,17 +394,17 @@ const streamVideo = async (
             "application/octet-stream";
 
 
-        // ----------------------------------
-        // 7. Kiểm tra Range
-        // ----------------------------------
+        // ==========================================
+        // RANGE REQUEST
+        // ==========================================
 
         const range =
             req.headers.range;
 
 
-        // ==================================
-        // KHÔNG CÓ RANGE
-        // ==================================
+        // ==========================================
+        // NO RANGE
+        // ==========================================
 
         if (!range) {
 
@@ -433,15 +435,14 @@ const streamVideo = async (
         }
 
 
-        // ==================================
-        // CÓ RANGE
-        // ==================================
+        // ==========================================
+        // PARSE RANGE
+        // ==========================================
 
         const parts =
-            range.replace(
-                /bytes=/,
-                ""
-            ).split("-");
+            range
+                .replace(/bytes=/, "")
+                .split("-");
 
 
         let start =
@@ -457,9 +458,9 @@ const streamVideo = async (
                 : fileSize - 1;
 
 
-        // ----------------------------------
-        // Range không hợp lệ
-        // ----------------------------------
+        // ==========================================
+        // INVALID RANGE
+        // ==========================================
 
         if (
             isNaN(start) ||
@@ -478,10 +479,6 @@ const streamVideo = async (
         }
 
 
-        // ----------------------------------
-        // Giới hạn end
-        // ----------------------------------
-
         if (
             isNaN(end) ||
             end >= fileSize
@@ -489,13 +486,8 @@ const streamVideo = async (
 
             end =
                 fileSize - 1;
-
         }
 
-
-        // ----------------------------------
-        // Đảm bảo start <= end
-        // ----------------------------------
 
         if (start > end) {
 
@@ -510,13 +502,13 @@ const streamVideo = async (
         }
 
 
+        // ==========================================
+        // STREAM RANGE
+        // ==========================================
+
         const chunkSize =
             end - start + 1;
 
-
-        // ----------------------------------
-        // Response 206
-        // ----------------------------------
 
         res.writeHead(
             206,
@@ -533,14 +525,9 @@ const streamVideo = async (
 
                 "Content-Type":
                     contentType
-
             }
         );
 
-
-        // ----------------------------------
-        // Stream
-        // ----------------------------------
 
         const videoStream =
             fs.createReadStream(
@@ -554,7 +541,6 @@ const streamVideo = async (
 
         videoStream.pipe(res);
 
-
     } catch (error) {
 
         console.error(
@@ -565,7 +551,7 @@ const streamVideo = async (
 
         if (
             error.message ===
-            "Bạn chưa đăng ký khóa học này"
+                "Bạn chưa đăng ký khóa học này"
         ) {
 
             return res.status(403).json({
@@ -574,15 +560,13 @@ const streamVideo = async (
 
                 message:
                     error.message
-
             });
-
         }
 
 
         if (
             error.message ===
-            "Bạn không có quyền xem video"
+                "Bạn không có quyền xem video"
         ) {
 
             return res.status(403).json({
@@ -591,15 +575,13 @@ const streamVideo = async (
 
                 message:
                     error.message
-
             });
-
         }
 
 
         if (
             error.message ===
-            "Không tìm thấy bài học"
+                "Không tìm thấy bài học"
         ) {
 
             return res.status(404).json({
@@ -608,15 +590,13 @@ const streamVideo = async (
 
                 message:
                     error.message
-
             });
-
         }
 
 
         if (
             error.message ===
-            "Bài học chưa có video"
+                "Bài học chưa có video"
         ) {
 
             return res.status(404).json({
@@ -625,9 +605,7 @@ const streamVideo = async (
 
                 message:
                     error.message
-
             });
-
         }
 
 
@@ -637,11 +615,14 @@ const streamVideo = async (
 
             message:
                 "Không thể phát video"
-
         });
-
     }
 };
+
+
+// ==========================================
+// EXPORT
+// ==========================================
 
 module.exports = {
 
