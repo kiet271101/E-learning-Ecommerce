@@ -1,47 +1,49 @@
 import api from "./api";
 
+// ==========================================
+// GET REVIEWS BY COURSE
+// ==========================================
+
 const getReviewsByCourse = async (courseId) => {
-
-    const response =
-        await api.get(`/reviews/course/${courseId}`);
+    const response = await api.get(`/reviews/course/${courseId}`);
 
     return response.data;
 };
 
-const createReview = async (
-    courseId,
-    data
-) => {
+// ==========================================
+// CREATE REVIEW
+// ==========================================
 
-    const response =
-        await api.post(
-            `/reviews/course/${courseId}`,
-            data
-        );
+const createReview = async (courseId, reviewData) => {
+    const response = await api.post(
+        `/reviews/course/${courseId}`,
+        reviewData
+    );
+
+    return response.data;
+};
+
+// ==========================================
+// UPDATE REVIEW
+// ==========================================
+
+const updateReview = async (reviewId, reviewData) => {
+    const response = await api.put(
+        `/reviews/${reviewId}`,
+        reviewData
+    );
 
     return response.data;
 };
 
-const updateReview = async (
-    reviewId,
-    data
-) => {
-
-    const response =
-        await api.put(
-            `/reviews/${reviewId}`,
-            data
-        );
-
-    return response.data;
-};
+// ==========================================
+// DELETE REVIEW
+// ==========================================
 
 const deleteReview = async (reviewId) => {
-
-    const response =
-        await api.delete(
-            `/reviews/${reviewId}`
-        );
+    const response = await api.delete(
+        `/reviews/${reviewId}`
+    );
 
     return response.data;
 };

@@ -33,6 +33,18 @@ import MyCourses
 import LearningPage
     from "../views/learning/LearningPage";
 
+import TeacherCourseList
+    from "../views/teacher/TeacherCourseList";
+
+import TeacherCourseCreate
+    from "../views/teacher/TeacherCourseCreate";
+
+import TeacherLessonManagement
+    from "../views/teacher/TeacherLessonManagement";
+
+import TeacherCourseEdit
+    from "../views/teacher/TeacherCourseEdit";
+
 function AppRoutes() {
 
     return (
@@ -133,6 +145,36 @@ function AppRoutes() {
                                 <TeacherDashboard />
                             }
                         />
+
+                        <Route
+                            path="/teacher/courses"
+                            element={
+                                <TeacherCourseList />
+                            }
+                        />
+
+                        <Route
+                            path="/teacher/courses/create"
+                            element={
+                                <TeacherCourseCreate />
+                            }
+                        />
+
+                        <Route
+                            path="/teacher/courses/edit/:courseId"
+                            element={
+                                <TeacherCourseEdit />
+                            }
+                        />
+
+                        <Route
+                            path="/teacher/courses/:courseId/lessons"
+                            element={
+                                <TeacherLessonManagement />
+                            }
+                        />
+
+                        
 
                     </Route>
 

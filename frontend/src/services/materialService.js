@@ -16,6 +16,56 @@ const getMaterialsByLesson = async (lessonId) => {
 
 
 // ==========================================
+// GET MATERIAL BY ID
+// ==========================================
+
+const getMaterialById = async (materialId) => {
+
+    const response =
+        await api.get(
+            `/materials/${materialId}`
+        );
+
+    return response.data;
+};
+
+
+// ==========================================
+// UPLOAD MATERIAL
+// ==========================================
+
+const uploadMaterial = async (lessonId, file) => {
+
+    const formData = new FormData();
+
+    formData.append("file", file);
+
+    const response =
+        await api.post(
+            `/materials/lesson/${lessonId}`,
+            formData
+        );
+
+    return response.data;
+};
+
+
+// ==========================================
+// DELETE MATERIAL
+// ==========================================
+
+const deleteMaterial = async (materialId) => {
+
+    const response =
+        await api.delete(
+            `/materials/${materialId}`
+        );
+
+    return response.data;
+};
+
+
+// ==========================================
 // DOWNLOAD MATERIAL
 // ==========================================
 
@@ -34,6 +84,13 @@ const downloadMaterial = async (materialId) => {
 
 
 export default {
+
     getMaterialsByLesson,
+    getMaterialById,
+
+    uploadMaterial,
+    deleteMaterial,
+
     downloadMaterial
+
 };
