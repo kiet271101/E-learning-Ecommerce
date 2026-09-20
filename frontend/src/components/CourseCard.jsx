@@ -1,90 +1,81 @@
 import { useNavigate } from "react-router-dom";
+import "../styles/CourseCard.css";
 
 function CourseCard({ course }) {
-
     const navigate = useNavigate();
 
     const handleViewDetail = () => {
-
         navigate(`/courses/${course.id}`);
     };
 
     return (
-        <div style={styles.card}>
+        <div className="course-card">
 
             {/* THUMBNAIL */}
-
-            <div style={styles.thumbnail}>
-
+            <div className="course-card-thumbnail">
                 {course.thumbnail ? (
-
                     <img
                         src={course.thumbnail}
                         alt={course.title}
-                        style={styles.image}
+                        className="course-card-image"
                     />
-
                 ) : (
-
-                    <div style={styles.noImage}>
+                    <div className="course-card-no-image">
                         Không có hình ảnh
                     </div>
-
                 )}
-
             </div>
 
             {/* CONTENT */}
+            <div className="course-card-content">
 
-            <div style={styles.content}>
-
-                <h3 style={styles.title}>
+                <h3 className="course-card-title">
                     {course.title}
                 </h3>
 
-                <p style={styles.description}>
+                <p className="course-card-description">
                     {course.description
-                        ? course.description.substring(
-                            0,
-                            100
-                        )
+                        ? course.description.substring(0, 100)
                         : "Chưa có mô tả"}
+                    {course.description &&
+                        course.description.length > 100 &&
+                        "..."}
                 </p>
 
                 {/* CATEGORY */}
-
                 {course.category && (
-                    <p>
-                        Danh mục:{" "}
+                    <p className="course-card-info">
+                        <span className="course-card-label">
+                            Danh mục:
+                        </span>{" "}
                         {course.category.name}
                     </p>
                 )}
 
                 {/* TEACHER */}
-
                 {course.teacher && (
-                    <p>
-                        Giảng viên:{" "}
+                    <p className="course-card-info">
+                        <span className="course-card-label">
+                            Giảng viên:
+                        </span>{" "}
                         {course.teacher.name}
                     </p>
                 )}
 
-                {/* PRICE */}
+                {/* BOTTOM */}
+                <div className="course-card-bottom">
 
-                <div style={styles.bottom}>
-
-                    <strong style={styles.price}>
-
+                    <strong className="course-card-price">
                         {Number(course.price) === 0
                             ? "Miễn phí"
                             : `${Number(
                                 course.price
-                            ).toLocaleString("vi-VN")} đ`
-                        }
-
+                            ).toLocaleString("vi-VN")} đ`}
                     </strong>
 
                     <button
+                        type="button"
+                        className="course-card-button"
                         onClick={handleViewDetail}
                     >
                         Xem chi tiết
@@ -97,62 +88,5 @@ function CourseCard({ course }) {
         </div>
     );
 }
-
-const styles = {
-
-    card: {
-        background: "#fff",
-        borderRadius: "10px",
-        overflow: "hidden",
-        boxShadow:
-            "0 3px 10px rgba(0,0,0,0.1)",
-        transition: "0.2s"
-    },
-
-    thumbnail: {
-        width: "100%",
-        height: "180px",
-        background: "#eee"
-    },
-
-    image: {
-        width: "100%",
-        height: "100%",
-        objectFit: "cover"
-    },
-
-    noImage: {
-        height: "100%",
-        display: "flex",
-        justifyContent: "center",
-        alignItems: "center",
-        color: "#777"
-    },
-
-    content: {
-        padding: "20px"
-    },
-
-    title: {
-        marginBottom: "10px"
-    },
-
-    description: {
-        color: "#666",
-        lineHeight: "1.5"
-    },
-
-    bottom: {
-        marginTop: "20px",
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "space-between"
-    },
-
-    price: {
-        fontSize: "18px"
-    }
-
-};
 
 export default CourseCard;

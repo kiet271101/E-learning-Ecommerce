@@ -1,12 +1,5 @@
-import {
-    useEffect,
-    useState
-} from "react";
-
-import {
-    useNavigate,
-    useParams
-} from "react-router-dom";
+import { useEffect, useState } from "react";
+import { useNavigate, useParams } from "react-router-dom";
 
 import {
     loadCourseDetail,
@@ -14,8 +7,7 @@ import {
     loadCourseReviews
 } from "../../controllers/courseDetailController";
 
-import authService
-    from "../../services/authService";
+import authService from "../../services/authService";
 
 import {
     checkEnrollmentController,
@@ -27,6 +19,8 @@ import {
     updateReviewController,
     deleteReviewController
 } from "../../controllers/reviewController";
+
+import "../../styles/CourseDetail.css";
 
 
 function CourseDetail() {
@@ -46,13 +40,13 @@ function CourseDetail() {
     const [lessons, setLessons] =
         useState([]);
 
-
-    // ==========================================
-    // REVIEWS
-    // ==========================================
-
     const [reviews, setReviews] =
         useState([]);
+
+
+    // ==========================================
+    // RATING
+    // ==========================================
 
     const [averageRating, setAverageRating] =
         useState(0);
@@ -89,7 +83,7 @@ function CourseDetail() {
 
 
     // ==========================================
-    // REVIEW FORM
+    // REVIEW
     // ==========================================
 
     const [reviewRating, setReviewRating] =
@@ -107,17 +101,12 @@ function CourseDetail() {
     const [reviewSuccess, setReviewSuccess] =
         useState("");
 
-
-    // ==========================================
-    // EDIT REVIEW
-    // ==========================================
-
     const [editingReviewId, setEditingReviewId] =
         useState(null);
 
 
     // ==========================================
-    // LOAD DATA
+    // LOAD COURSE
     // ==========================================
 
     useEffect(() => {
@@ -129,59 +118,42 @@ function CourseDetail() {
                 setLoading(true);
                 setError("");
 
-
-                // ==========================================
-                // COURSE
-                // ==========================================
-
                 const courseResult =
                     await loadCourseDetail(id);
-
 
                 if (!courseResult.success) {
 
                     setError(
-                        courseResult.message
+                        courseResult.message ||
+                        "Không thể tải khóa học"
                     );
-
-                    setLoading(false);
 
                     return;
                 }
 
-
                 setCourse(courseResult.data);
 
 
-                // ==========================================
-                // CHECK ENROLLMENT
-                // ==========================================
+                // ==================================
+                // CHECK LOGIN / ENROLLMENT
+                // ==================================
 
-                if (authService.isLoggedIn()) {
+                const currentUser =
+                    authService.getCurrentUser();
 
-                    try {
+                if (currentUser) {
 
-                        const enrollmentResult =
-                            await checkEnrollmentController(id);
+                    const enrollmentResult =
+                        await checkEnrollmentController(id);
 
+                    if (enrollmentResult.success) {
 
-                        if (enrollmentResult.success) {
+                        const enrollmentData =
+                            enrollmentResult.data;
 
-                            const enrollmentData =
-                                enrollmentResult.data;
-
-
-                            setIsEnrolled(
-                                enrollmentData.enrolled === true ||
-                                enrollmentData.isEnrolled === true
-                            );
-                        }
-
-                    } catch (enrollmentError) {
-
-                        console.error(
-                            "Check enrollment error:",
-                            enrollmentError
+                        setIsEnrolled(
+                            enrollmentData.enrolled === true ||
+                            enrollmentData.isEnrolled === true
                         );
 
                     }
@@ -189,38 +161,71 @@ function CourseDetail() {
                 }
 
 
-                // ==========================================
+                // ==================================
                 // LESSONS
-                // ==========================================
+                // ==================================
 
-                const lessonResult =
+                const lessonsResult =
                     await loadCourseLessons(id);
 
-
-                if (lessonResult.success) {
+                if (lessonsResult.success) {
 
                     setLessons(
-                        lessonResult.data
+                        lessonsResult.data || []
                     );
+
                 }
 
 
-                // ==========================================
+                // ==================================
                 // REVIEWS
-                // ==========================================
+                // ==================================
 
-                await loadReviews();
+                const reviewsResult =
+                    await loadCourseReviews(id);
 
-            } catch (error) {
+                if (reviewsResult.success) {
+
+                    const reviewData =
+                        reviewsResult.data;
+
+                    setReviews(
+                        reviewData.reviews ||
+                        reviewData.data ||
+                        []
+                    );
+
+                    setAverageRating(
+                        Number(
+                            reviewData.averageRating ||
+                            reviewData.average_rating ||
+                            0
+                        )
+                    );
+
+                    setTotalReviews(
+                        Number(
+                            reviewData.totalReviews ||
+                            reviewData.total_reviews ||
+                            (
+                                reviewData.reviews ||
+                                reviewData.data ||
+                                []
+                            ).length
+                        )
+                    );
+
+                }
+
+            } catch (err) {
 
                 console.error(
-                    "CourseDetail load error:",
-                    error
+                    "COURSE DETAIL ERROR:",
+                    err
                 );
 
                 setError(
-                    error.response?.data?.message ||
-                    error.message ||
+                    err.response?.data?.message ||
                     "Không thể tải dữ liệu khóa học"
                 );
 
@@ -233,107 +238,63 @@ function CourseDetail() {
         };
 
 
-        loadData();
+        if (id) {
+            loadData();
+        }
 
     }, [id]);
 
 
     // ==========================================
-    // LOAD REVIEWS
-    // ==========================================
-
-    const loadReviews = async () => {
-
-        try {
-
-            const reviewResult =
-                await loadCourseReviews(id);
-
-
-            if (!reviewResult.success) {
-                return;
-            }
-
-
-            const reviewData =
-                reviewResult.data;
-
-
-            setReviews(
-                reviewData.reviews || []
-            );
-
-
-            setAverageRating(
-                reviewData.averageRating || 0
-            );
-
-
-            setTotalReviews(
-                reviewData.totalReviews || 0
-            );
-
-        } catch (error) {
-
-            console.error(
-                "Load reviews error:",
-                error
-            );
-
-        }
-
-    };
-
-
-    // ==========================================
-    // HANDLE ENROLL
+    // ENROLL
     // ==========================================
 
     const handleEnroll = async () => {
 
-        if (!authService.isLoggedIn()) {
+        const currentUser =
+            authService.getCurrentUser();
+
+        if (!currentUser) {
 
             navigate("/login");
 
             return;
         }
 
-
-        if (enrollmentLoading) {
-            return;
-        }
-
-
-        setEnrollmentLoading(true);
-
-
         try {
+
+            setEnrollmentLoading(true);
 
             const result =
                 await enrollCourseController(id);
 
-
             if (!result.success) {
 
-                alert(result.message);
+                alert(
+                    result.message ||
+                    "Đăng ký khóa học thất bại"
+                );
 
                 return;
             }
 
-
             alert(
-                "Đăng ký khóa học thành công!"
+                result.message ||
+                "Đăng ký khóa học thành công"
             );
-
 
             setIsEnrolled(true);
 
-        } catch (error) {
+        } catch (err) {
+
+            console.error(
+                "ENROLL ERROR:",
+                err
+            );
 
             alert(
-                error.response?.data?.message ||
-                error.message ||
-                "Đăng ký khóa học thất bại"
+                err.response?.data?.message ||
+                "Không thể đăng ký khóa học"
             );
 
         } finally {
@@ -346,108 +307,35 @@ function CourseDetail() {
 
 
     // ==========================================
-    // CHECK LOGIN FOR REVIEW
+    // REVIEW HELPERS
     // ==========================================
 
-    const handleReviewLogin = () => {
+    const renderStars = (rating) => {
 
-        if (!authService.isLoggedIn()) {
+        return (
+            <>
+                {[1, 2, 3, 4, 5].map((star) => (
 
-            navigate("/login");
+                    <span key={star}>
+                        {star <= Number(rating)
+                            ? "⭐"
+                            : "☆"
+                        }
+                    </span>
 
-            return false;
-        }
-
-        return true;
-    };
-
-
-    // ==========================================
-    // CREATE REVIEW
-    // ==========================================
-
-    const handleCreateReview = async (event) => {
-
-        event.preventDefault();
-
-
-        if (!handleReviewLogin()) {
-            return;
-        }
-
-
-        if (!isEnrolled) {
-
-            setReviewError(
-                "Bạn cần đăng ký khóa học trước khi đánh giá."
-            );
-
-            return;
-        }
-
-
-        setReviewLoading(true);
-        setReviewError("");
-        setReviewSuccess("");
-
-
-        try {
-
-            const result =
-                await createReviewController(
-                    id,
-                    {
-                        rating: reviewRating,
-                        comment: reviewComment
-                    }
-                );
-
-
-            setReviewSuccess(
-                result.message ||
-                "Đánh giá khóa học thành công!"
-            );
-
-
-            setReviewRating(5);
-            setReviewComment("");
-
-
-            await loadReviews();
-
-        } catch (error) {
-
-            console.error(
-                "Create review error:",
-                error
-            );
-
-
-            setReviewError(
-                error.response?.data?.message ||
-                error.message ||
-                "Không thể tạo đánh giá"
-            );
-
-        } finally {
-
-            setReviewLoading(false);
-
-        }
+                ))}
+            </>
+        );
 
     };
 
-
-    // ==========================================
-    // START EDIT REVIEW
-    // ==========================================
 
     const handleStartEdit = (review) => {
 
         setEditingReviewId(review.id);
 
         setReviewRating(
-            Number(review.rating)
+            Number(review.rating) || 5
         );
 
         setReviewComment(
@@ -457,18 +345,8 @@ function CourseDetail() {
         setReviewError("");
         setReviewSuccess("");
 
-
-        window.scrollTo({
-            top: document.body.scrollHeight,
-            behavior: "smooth"
-        });
-
     };
 
-
-    // ==========================================
-    // CANCEL EDIT
-    // ==========================================
 
     const handleCancelEdit = () => {
 
@@ -485,40 +363,152 @@ function CourseDetail() {
 
 
     // ==========================================
-    // UPDATE REVIEW
+    // CREATE / UPDATE REVIEW
     // ==========================================
 
-    const handleUpdateReview = async (event) => {
+    const handleSubmitReview = async (event) => {
 
         event.preventDefault();
 
-
-        if (!handleReviewLogin()) {
-            return;
-        }
-
-
-        setReviewLoading(true);
         setReviewError("");
         setReviewSuccess("");
 
 
+        const currentUser =
+            authService.getCurrentUser();
+
+        if (!currentUser) {
+
+            navigate("/login");
+
+            return;
+        }
+
+
+        if (!isEnrolled) {
+
+            setReviewError(
+                "Bạn cần đăng ký khóa học để có thể đánh giá."
+            );
+
+            return;
+        }
+
+
+        if (
+            !reviewRating ||
+            reviewRating < 1 ||
+            reviewRating > 5
+        ) {
+
+            setReviewError(
+                "Vui lòng chọn số sao từ 1 đến 5."
+            );
+
+            return;
+        }
+
+
+        if (!reviewComment.trim()) {
+
+            setReviewError(
+                "Vui lòng nhập nội dung đánh giá."
+            );
+
+            return;
+        }
+
+
         try {
 
-            const result =
-                await updateReviewController(
-                    editingReviewId,
-                    {
-                        rating: reviewRating,
-                        comment: reviewComment
-                    }
+            setReviewLoading(true);
+
+
+            let result;
+
+
+            if (editingReviewId) {
+
+                result =
+                    await updateReviewController(
+                        editingReviewId,
+                        {
+                            rating: reviewRating,
+                            comment: reviewComment.trim()
+                        }
+                    );
+
+            } else {
+
+                result =
+                    await createReviewController(
+                        id,
+                        {
+                            rating: reviewRating,
+                            comment: reviewComment.trim()
+                        }
+                    );
+
+            }
+
+
+            if (!result.success) {
+
+                setReviewError(
+                    result.message ||
+                    "Không thể lưu đánh giá"
                 );
+
+                return;
+            }
 
 
             setReviewSuccess(
-                result.message ||
-                "Cập nhật đánh giá thành công!"
+                editingReviewId
+                    ? "Cập nhật đánh giá thành công."
+                    : "Đánh giá khóa học thành công."
             );
+
+
+            // ==================================
+            // RELOAD REVIEWS
+            // ==================================
+
+            const reviewsResult =
+                await loadCourseReviews(id);
+
+            if (reviewsResult.success) {
+
+                const reviewData =
+                    reviewsResult.data;
+
+                setReviews(
+                    reviewData.reviews ||
+                    reviewData.data ||
+                    []
+                );
+
+                setAverageRating(
+                    Number(
+                        reviewData.averageRating ||
+                        reviewData.average_rating ||
+                        0
+                    )
+                );
+
+                setTotalReviews(
+                    Number(
+                        reviewData.totalReviews ||
+                        reviewData.total_reviews ||
+                        (
+                            reviewData.reviews ||
+                            reviewData.data ||
+                            []
+                        ).length
+                    )
+                );
+
+            }
 
 
             setEditingReviewId(null);
@@ -527,21 +517,16 @@ function CourseDetail() {
 
             setReviewComment("");
 
-
-            await loadReviews();
-
-        } catch (error) {
+        } catch (err) {
 
             console.error(
-                "Update review error:",
-                error
+                "REVIEW ERROR:",
+                err
             );
 
-
             setReviewError(
-                error.response?.data?.message ||
-                error.message ||
-                "Không thể cập nhật đánh giá"
+                err.response?.data?.message ||
+                "Không thể lưu đánh giá"
             );
 
         } finally {
@@ -559,16 +544,10 @@ function CourseDetail() {
 
     const handleDeleteReview = async (reviewId) => {
 
-        if (!handleReviewLogin()) {
-            return;
-        }
-
-
         const confirmed =
             window.confirm(
                 "Bạn có chắc muốn xóa đánh giá này?"
             );
-
 
         if (!confirmed) {
             return;
@@ -577,127 +556,79 @@ function CourseDetail() {
 
         try {
 
+            setReviewError("");
+            setReviewSuccess("");
+
             const result =
                 await deleteReviewController(
                     reviewId
                 );
 
+            if (!result.success) {
+
+                setReviewError(
+                    result.message ||
+                    "Không thể xóa đánh giá"
+                );
+
+                return;
+            }
+
 
             setReviewSuccess(
-                result.message ||
-                "Xóa đánh giá thành công!"
+                "Xóa đánh giá thành công."
             );
 
 
-            await loadReviews();
+            const reviewsResult =
+                await loadCourseReviews(id);
 
-        } catch (error) {
+            if (reviewsResult.success) {
+
+                const reviewData =
+                    reviewsResult.data;
+
+                setReviews(
+                    reviewData.reviews ||
+                    reviewData.data ||
+                    []
+                );
+
+                setAverageRating(
+                    Number(
+                        reviewData.averageRating ||
+                        reviewData.average_rating ||
+                        0
+                    )
+                );
+
+                setTotalReviews(
+                    Number(
+                        reviewData.totalReviews ||
+                        reviewData.total_reviews ||
+                        (
+                            reviewData.reviews ||
+                            reviewData.data ||
+                            []
+                        ).length
+                    )
+                );
+
+            }
+
+        } catch (err) {
 
             console.error(
-                "Delete review error:",
-                error
+                "DELETE REVIEW ERROR:",
+                err
             );
 
-
             setReviewError(
-                error.response?.data?.message ||
-                error.message ||
+                err.response?.data?.message ||
                 "Không thể xóa đánh giá"
             );
 
         }
-
-    };
-
-
-    // ==========================================
-    // GET CURRENT USER
-    // ==========================================
-
-    const getCurrentUser = () => {
-
-        try {
-
-            if (!authService.isLoggedIn()) {
-                return null;
-            }
-
-
-            if (
-                typeof authService.getCurrentUser ===
-                "function"
-            ) {
-
-                return authService.getCurrentUser();
-
-            }
-
-
-            if (
-                typeof authService.getUser ===
-                "function"
-            ) {
-
-                return authService.getUser();
-
-            }
-
-
-            return null;
-
-        } catch (error) {
-
-            console.error(
-                "Get current user error:",
-                error
-            );
-
-            return null;
-
-        }
-
-    };
-
-
-    const currentUser =
-        getCurrentUser();
-
-
-    // ==========================================
-    // CHECK OWN REVIEW
-    // ==========================================
-
-    const isOwnReview = (review) => {
-
-        if (!currentUser) {
-            return false;
-        }
-
-
-        return (
-            Number(review.student_id) ===
-            Number(currentUser.id)
-        );
-
-    };
-
-
-    // ==========================================
-    // RENDER STARS
-    // ==========================================
-
-    const renderStars = (rating) => {
-
-        const value =
-            Number(rating) || 0;
-
-
-        return (
-            <span>
-                {"⭐".repeat(value)}
-                {"☆".repeat(5 - value)}
-            </span>
-        );
 
     };
 
@@ -709,15 +640,16 @@ function CourseDetail() {
     if (loading) {
 
         return (
-            <div style={styles.container}>
+
+            <div className="course-detail-loading">
 
                 <h2>
                     Đang tải khóa học...
                 </h2>
 
             </div>
-        );
 
+        );
     }
 
 
@@ -728,19 +660,20 @@ function CourseDetail() {
     if (error || !course) {
 
         return (
-            <div style={styles.container}>
+
+            <div className="course-detail-error">
 
                 <h2>
                     Không thể tải khóa học
                 </h2>
 
                 <p>
-                    {error}
+                    {error || "Không tìm thấy khóa học"}
                 </p>
 
             </div>
-        );
 
+        );
     }
 
 
@@ -750,519 +683,457 @@ function CourseDetail() {
 
     return (
 
-        <div style={styles.container}>
+        <main className="course-detail-page">
+
+            <div className="course-detail-container">
+
+                {/* ==================================
+                    COURSE HEADER
+                ================================== */}
+
+                <section className="course-detail-header">
+
+                    <div className="course-detail-thumbnail">
+
+                        {course.thumbnail ? (
+
+                            <img
+                                src={course.thumbnail}
+                                alt={course.title}
+                                className="course-detail-image"
+                            />
+
+                        ) : (
+
+                            <div className="course-detail-no-image">
+                                Không có hình ảnh
+                            </div>
+
+                        )}
+
+                    </div>
 
 
-            {/* ================================= */}
-            {/* COURSE HEADER */}
-            {/* ================================= */}
+                    <div className="course-detail-info">
 
-            <div style={styles.header}>
-
-
-                <div style={styles.thumbnail}>
-
-                    {course.thumbnail ? (
-
-                        <img
-                            src={course.thumbnail}
-                            alt={course.title}
-                            style={styles.image}
-                        />
-
-                    ) : (
-
-                        <div style={styles.noImage}>
-                            Không có hình ảnh
-                        </div>
-
-                    )}
-
-                </div>
+                        <h1 className="course-detail-title">
+                            {course.title}
+                        </h1>
 
 
-                <div style={styles.info}>
+                        {course.description && (
 
-                    <h1>
-                        {course.title}
-                    </h1>
+                            <p className="course-detail-description">
+                                {course.description}
+                            </p>
 
-
-                    <p>
-                        {course.description}
-                    </p>
+                        )}
 
 
-                    {course.category && (
-
-                        <p>
+                        <p className="course-detail-meta">
 
                             <strong>
                                 Danh mục:
                             </strong>{" "}
 
-                            {course.category.name}
+                            {course.category?.name ||
+                                "Chưa phân loại"}
 
                         </p>
 
-                    )}
 
-
-                    {course.teacher && (
-
-                        <p>
+                        <p className="course-detail-meta">
 
                             <strong>
                                 Giảng viên:
                             </strong>{" "}
 
-                            {course.teacher.name}
+                            {course.teacher?.name ||
+                                "Chưa cập nhật"}
 
                         </p>
 
-                    )}
+
+                        <div className="course-detail-rating">
+
+                            ⭐{" "}
+
+                            {Number(
+                                averageRating
+                            ).toFixed(1)}
+
+                            {" "}
+
+                            ({totalReviews} đánh giá)
+
+                        </div>
 
 
-                    <div style={styles.rating}>
+                        <div className="course-detail-price">
 
-                        ⭐{" "}
-                        {averageRating}
+                            {Number(course.price) === 0
 
-                        {" "}
+                                ? "Miễn phí"
 
-                        ({totalReviews} đánh giá)
-
-                    </div>
-
-
-                    <div style={styles.price}>
-
-                        {Number(course.price) === 0
-
-                            ? "Miễn phí"
-
-                            : `${Number(
-                                course.price
-                            ).toLocaleString(
-                                "vi-VN"
-                            )} đ`
-
-                        }
-
-                    </div>
-
-
-                    {isEnrolled ? (
-
-                        <button
-                            style={styles.primaryButton}
-                            onClick={() => {
-
-                                navigate(
-                                    `/learning/${course.id}`
-                                );
-
-                            }}
-                        >
-
-                            Học ngay
-
-                        </button>
-
-                    ) : Number(course.price) === 0 ? (
-
-                        <button
-                            style={styles.primaryButton}
-                            onClick={handleEnroll}
-                            disabled={enrollmentLoading}
-                        >
-
-                            {enrollmentLoading
-
-                                ? "Đang đăng ký..."
-
-                                : "Đăng ký học"
-
+                                : `${Number(
+                                    course.price
+                                ).toLocaleString(
+                                    "vi-VN"
+                                )} đ`
                             }
 
-                        </button>
+                        </div>
 
-                    ) : (
 
-                        <button
-                            style={styles.primaryButton}
-                            onClick={() => {
+                        {/* ==================================
+                            ENROLL / LEARNING
+                        ================================== */}
 
-                                if (!authService.isLoggedIn()) {
+                        {isEnrolled ? (
 
-                                    navigate("/login");
-
-                                    return;
-
+                            <button
+                                className="course-detail-primary-button"
+                                onClick={() =>
+                                    navigate(
+                                        `/learning/${course.id}`
+                                    )
                                 }
+                            >
+                                Học ngay
+                            </button>
+
+                        ) : Number(course.price) === 0 ? (
+
+                            <button
+                                className="course-detail-primary-button"
+                                onClick={handleEnroll}
+                                disabled={enrollmentLoading}
+                            >
+                                {enrollmentLoading
+                                    ? "Đang đăng ký..."
+                                    : "Đăng ký học"
+                                }
+                            </button>
+
+                        ) : (
+
+                            <button
+                                className="course-detail-primary-button"
+                                onClick={() =>
+                                    alert(
+                                        "Chức năng mua khóa học sẽ được thực hiện ở bước thanh toán."
+                                    )
+                                }
+                            >
+                                Mua khóa học
+                            </button>
+
+                        )}
+
+                    </div>
+
+                </section>
 
 
-                                alert(
-                                    "Chức năng mua khóa học sẽ thực hiện ở bước thanh toán."
-                                );
+                {/* ==================================
+                    LESSONS
+                ================================== */}
 
-                            }}
-                        >
+                <section className="course-detail-section">
 
-                            Mua khóa học
+                    <h2 className="course-detail-section-title">
+                        Nội dung khóa học
+                    </h2>
 
-                        </button>
+                    <p className="course-detail-section-subtitle">
+                        {lessons.length} bài học
+                    </p>
 
-                    )}
-
-                </div>
-
-            </div>
-
-
-            {/* ================================= */}
-            {/* LESSONS */}
-            {/* ================================= */}
-
-            <div style={styles.section}>
-
-                <h2>
-                    Nội dung khóa học
-                </h2>
-
-
-                <p>
-                    {lessons.length} bài học
-                </p>
-
-
-                <div>
 
                     {lessons.length === 0 ? (
 
-                        <p>
-                            Chưa có bài học.
-                        </p>
+                        <div className="course-detail-empty">
+                            Chưa có bài học nào.
+                        </div>
 
                     ) : (
 
-                        lessons.map(
-                            (lesson, index) => (
+                        <div className="course-detail-lesson-list">
+
+                            {lessons.map((lesson) => (
 
                                 <div
                                     key={lesson.id}
-                                    style={styles.lesson}
+                                    className="course-detail-lesson"
                                 >
 
-                                    <div>
+                                    <div className="course-detail-lesson-title">
 
-                                        <strong>
-
-                                            Bài{" "}
-
-                                            {lesson.lesson_order ||
-                                                index + 1}
-
-                                            :
-
-                                        </strong>{" "}
+                                        {lesson.lesson_order
+                                            ? `${lesson.lesson_order}. `
+                                            : ""}
 
                                         {lesson.title}
 
                                     </div>
 
 
-                                    <div>
+                                    <div className="course-detail-lesson-access">
 
-                                        {lesson.is_preview ? (
+                                        {lesson.is_preview
 
-                                            <span>
-                                                👁 Xem trước
-                                            </span>
+                                            ? "👁 Xem trước"
 
-                                        ) : (
+                                            : "🔒 Nội dung học viên"
 
-                                            <span>
-                                                🔒 Nội dung học viên
-                                            </span>
-
-                                        )}
-
-                                    </div>
-
-                                </div>
-
-                            )
-
-                        )
-
-                    )}
-
-                </div>
-
-            </div>
-
-
-            {/* ================================= */}
-            {/* REVIEWS */}
-            {/* ================================= */}
-
-            <div style={styles.section}>
-
-                <h2>
-                    Đánh giá khóa học
-                </h2>
-
-
-                {/* ================================= */}
-                {/* REVIEW SUMMARY */}
-                {/* ================================= */}
-
-                <div style={styles.summary}>
-
-                    <div>
-
-                        <strong
-                            style={styles.averageRating}
-                        >
-
-                            ⭐ {averageRating}
-
-                        </strong>
-
-                    </div>
-
-
-                    <div>
-
-                        <span>
-                            {totalReviews} đánh giá
-                        </span>
-
-                    </div>
-
-                </div>
-
-
-                {/* ================================= */}
-                {/* MESSAGE */}
-                {/* ================================= */}
-
-                {reviewSuccess && (
-
-                    <div style={styles.successMessage}>
-
-                        {reviewSuccess}
-
-                    </div>
-
-                )}
-
-
-                {reviewError && (
-
-                    <div style={styles.errorMessage}>
-
-                        {reviewError}
-
-                    </div>
-
-                )}
-
-
-                {/* ================================= */}
-                {/* REVIEW LIST */}
-                {/* ================================= */}
-
-                {reviews.length === 0 ? (
-
-                    <p>
-                        Chưa có đánh giá nào.
-                    </p>
-
-                ) : (
-
-                    reviews.map((review) => (
-
-                        <div
-                            key={review.id}
-                            style={styles.review}
-                        >
-
-                            <div style={styles.reviewHeader}>
-
-                                <div>
-
-                                    <strong>
-                                        {review.student?.name ||
-                                            "Học viên"}
-                                    </strong>
-
-
-                                    <div
-                                        style={
-                                            styles.reviewStars
                                         }
-                                    >
-
-                                        {renderStars(
-                                            review.rating
-                                        )}
 
                                     </div>
 
                                 </div>
 
-
-                                {/* ================================= */}
-                                {/* OWN REVIEW ACTIONS */}
-                                {/* ================================= */}
-
-                                {isOwnReview(review) && (
-
-                                    <div>
-
-                                        <button
-                                            style={
-                                                styles.editButton
-                                            }
-                                            onClick={() =>
-                                                handleStartEdit(
-                                                    review
-                                                )
-                                            }
-                                        >
-
-                                            Sửa
-
-                                        </button>
-
-
-                                        <button
-                                            style={
-                                                styles.deleteButton
-                                            }
-                                            onClick={() =>
-                                                handleDeleteReview(
-                                                    review.id
-                                                )
-                                            }
-                                        >
-
-                                            Xóa
-
-                                        </button>
-
-                                    </div>
-
-                                )}
-
-                            </div>
-
-
-                            {review.comment && (
-
-                                <p>
-                                    {review.comment}
-                                </p>
-
-                            )}
+                            ))}
 
                         </div>
 
-                    ))
+                    )}
 
-                )}
+                </section>
 
 
-                {/* ================================= */}
-                {/* REVIEW FORM */}
-                {/* ================================= */}
+                {/* ==================================
+                    REVIEWS
+                ================================== */}
 
-                {isEnrolled && (
+                <section className="course-detail-section">
 
-                    <div style={styles.reviewForm}>
+                    <h2 className="course-detail-section-title">
+                        Đánh giá khóa học
+                    </h2>
 
-                        <h3>
 
-                            {editingReviewId
-                                ? "Chỉnh sửa đánh giá"
-                                : "Đánh giá khóa học"
-                            }
+                    <div className="course-detail-review-summary">
 
-                        </h3>
+                        <div className="course-detail-average-rating">
 
+                            ⭐{" "}
+
+                            {Number(
+                                averageRating
+                            ).toFixed(1)}
+
+                        </div>
+
+
+                        <div className="course-detail-total-reviews">
+
+                            {totalReviews} đánh giá
+
+                        </div>
+
+                    </div>
+
+
+                    {reviewSuccess && (
+
+                        <div className="course-detail-success-message">
+                            {reviewSuccess}
+                        </div>
+
+                    )}
+
+
+                    {reviewError && (
+
+                        <div className="course-detail-error-message">
+                            {reviewError}
+                        </div>
+
+                    )}
+
+
+                    {/* ==================================
+                        REVIEW LIST
+                    ================================== */}
+
+                    {reviews.length === 0 ? (
+
+                        <div className="course-detail-empty">
+                            Chưa có đánh giá nào.
+                        </div>
+
+                    ) : (
+
+                        <div>
+
+                            {reviews.map((review) => (
+
+                                <div
+                                    key={review.id}
+                                    className="course-detail-review"
+                                >
+
+                                    <div className="course-detail-review-header">
+
+                                        <div>
+
+                                            <div className="course-detail-review-user">
+                                                {review.student?.name ||
+                                                    review.user?.name ||
+                                                    "Học viên"}
+                                            </div>
+
+                                            <div className="course-detail-review-stars">
+                                                {renderStars(
+                                                    review.rating
+                                                )}
+                                            </div>
+
+                                        </div>
+
+
+                                        {(() => {
+
+                                            const currentUser =
+                                                authService.getCurrentUser();
+
+                                            const reviewUserId =
+                                                review.student_id ||
+                                                review.user_id ||
+                                                review.student?.id ||
+                                                review.user?.id;
+
+                                            if (
+                                                currentUser &&
+                                                Number(
+                                                    currentUser.id
+                                                ) === Number(
+                                                    reviewUserId
+                                                )
+                                            ) {
+
+                                                return (
+
+                                                    <div>
+
+                                                        <button
+                                                            type="button"
+                                                            className="course-detail-edit-button"
+                                                            onClick={() =>
+                                                                handleStartEdit(
+                                                                    review
+                                                                )
+                                                            }
+                                                        >
+                                                            Sửa
+                                                        </button>
+
+
+                                                        <button
+                                                            type="button"
+                                                            className="course-detail-delete-button"
+                                                            onClick={() =>
+                                                                handleDeleteReview(
+                                                                    review.id
+                                                                )
+                                                            }
+                                                        >
+                                                            Xóa
+                                                        </button>
+
+                                                    </div>
+
+                                                );
+
+                                            }
+
+                                            return null;
+
+                                        })()}
+
+                                    </div>
+
+
+                                    <p className="course-detail-review-comment">
+                                        {review.comment}
+                                    </p>
+
+                                </div>
+
+                            ))}
+
+                        </div>
+
+                    )}
+
+
+                    {/* ==================================
+                        REVIEW FORM
+                    ================================== */}
+
+                    {isEnrolled ? (
 
                         <form
-                            onSubmit={
-                                editingReviewId
-                                    ? handleUpdateReview
-                                    : handleCreateReview
-                            }
+                            className="course-detail-review-form"
+                            onSubmit={handleSubmitReview}
                         >
 
+                            <h3 className="course-detail-review-form-title">
 
-                            {/* RATING */}
+                                {editingReviewId
+                                    ? "Chỉnh sửa đánh giá"
+                                    : "Đánh giá khóa học"
+                                }
 
-                            <div style={styles.formGroup}>
+                            </h3>
 
-                                <label>
+
+                            <div className="course-detail-form-group">
+
+                                <label className="course-detail-form-label">
                                     Số sao
                                 </label>
 
 
-                                <div
-                                    style={
-                                        styles.starSelector
-                                    }
-                                >
+                                <div className="course-detail-star-selector">
 
-                                    {[1, 2, 3, 4, 5].map(
-                                        (star) => (
+                                    {[1, 2, 3, 4, 5].map((star) => (
 
-                                            <button
-                                                key={star}
-                                                type="button"
-                                                style={{
-                                                    ...styles.starButton,
-                                                    opacity:
-                                                        star <=
-                                                        reviewRating
-                                                            ? 1
-                                                            : 0.35
-                                                }}
-                                                onClick={() =>
-                                                    setReviewRating(
-                                                        star
-                                                    )
-                                                }
-                                            >
+                                        <button
+                                            key={star}
+                                            type="button"
+                                            className="course-detail-star-button"
+                                            style={{
+                                                opacity:
+                                                    star <= reviewRating
+                                                        ? 1
+                                                        : 0.35
+                                            }}
+                                            onClick={() =>
+                                                setReviewRating(
+                                                    star
+                                                )
+                                            }
+                                        >
+                                            ⭐
+                                        </button>
 
-                                                ⭐
-
-                                            </button>
-
-                                        )
-                                    )}
+                                    ))}
 
                                 </div>
 
                             </div>
 
 
-                            {/* COMMENT */}
+                            <div className="course-detail-form-group">
 
-                            <div style={styles.formGroup}>
-
-                                <label>
+                                <label className="course-detail-form-label">
                                     Nhận xét
                                 </label>
 
 
                                 <textarea
-                                    value={
-                                        reviewComment
-                                    }
+                                    value={reviewComment}
                                     onChange={(event) =>
                                         setReviewComment(
                                             event.target.value
@@ -1270,38 +1141,28 @@ function CourseDetail() {
                                     }
                                     placeholder="Nhập nhận xét của bạn..."
                                     rows={5}
-                                    style={
-                                        styles.textarea
-                                    }
+                                    className="course-detail-textarea"
                                 />
 
                             </div>
 
 
-                            {/* BUTTONS */}
-
-                            <div>
+                            <div className="course-detail-review-actions">
 
                                 <button
                                     type="submit"
-                                    style={
-                                        styles.primaryButton
-                                    }
-                                    disabled={
-                                        reviewLoading
-                                    }
+                                    className="course-detail-primary-button"
+                                    disabled={reviewLoading}
                                 >
-
                                     {reviewLoading
 
-                                        ? "Đang xử lý..."
+                                        ? "Đang lưu..."
 
                                         : editingReviewId
                                             ? "Cập nhật đánh giá"
                                             : "Gửi đánh giá"
 
                                     }
-
                                 </button>
 
 
@@ -1309,16 +1170,12 @@ function CourseDetail() {
 
                                     <button
                                         type="button"
-                                        style={
-                                            styles.cancelButton
-                                        }
+                                        className="course-detail-cancel-button"
                                         onClick={
                                             handleCancelEdit
                                         }
                                     >
-
                                         Hủy
-
                                     </button>
 
                                 )}
@@ -1327,259 +1184,23 @@ function CourseDetail() {
 
                         </form>
 
-                    </div>
+                    ) : (
 
-                )}
-
-
-                {/* ================================= */}
-                {/* NOT ENROLLED */}
-                {/* ================================= */}
-
-                {!isEnrolled &&
-                    reviews.length > 0 && (
-
-                        <p style={styles.note}>
-
-                            💡 Bạn cần đăng ký khóa học
-                            để có thể đánh giá.
-
+                        <p className="course-detail-note">
+                            💡 Bạn cần đăng ký khóa học để có thể đánh giá.
                         </p>
 
                     )}
 
+                </section>
+
             </div>
 
-        </div>
+        </main>
 
     );
 
 }
-
-
-// ==========================================
-// STYLES
-// ==========================================
-
-const styles = {
-
-    container: {
-        maxWidth: "1200px",
-        margin: "0 auto",
-        padding: "40px"
-    },
-
-
-    header: {
-        display: "grid",
-        gridTemplateColumns:
-            "minmax(300px, 1fr) 2fr",
-        gap: "40px",
-        background: "#fff",
-        padding: "30px",
-        borderRadius: "12px",
-        boxShadow:
-            "0 3px 12px rgba(0,0,0,0.08)"
-    },
-
-
-    thumbnail: {
-        width: "100%",
-        height: "300px",
-        background: "#eee",
-        borderRadius: "10px",
-        overflow: "hidden"
-    },
-
-
-    image: {
-        width: "100%",
-        height: "100%",
-        objectFit: "cover"
-    },
-
-
-    noImage: {
-        height: "100%",
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
-        color: "#777"
-    },
-
-
-    info: {
-        display: "flex",
-        flexDirection: "column",
-        gap: "15px"
-    },
-
-
-    rating: {
-        fontSize: "18px"
-    },
-
-
-    price: {
-        fontSize: "28px",
-        fontWeight: "bold"
-    },
-
-
-    primaryButton: {
-        width: "200px",
-        padding: "12px",
-        border: "none",
-        borderRadius: "6px",
-        cursor: "pointer",
-        fontSize: "16px",
-        marginRight: "10px"
-    },
-
-
-    section: {
-        marginTop: "30px",
-        background: "#fff",
-        padding: "30px",
-        borderRadius: "12px"
-    },
-
-
-    lesson: {
-        display: "flex",
-        justifyContent: "space-between",
-        alignItems: "center",
-        padding: "18px",
-        borderBottom:
-            "1px solid #eee"
-    },
-
-
-    summary: {
-        display: "flex",
-        alignItems: "center",
-        gap: "30px",
-        margin: "20px 0"
-    },
-
-
-    averageRating: {
-        fontSize: "24px"
-    },
-
-
-    review: {
-        padding: "20px 0",
-        borderBottom:
-            "1px solid #eee"
-    },
-
-
-    reviewHeader: {
-        display: "flex",
-        justifyContent: "space-between",
-        alignItems: "flex-start"
-    },
-
-
-    reviewStars: {
-        marginTop: "5px"
-    },
-
-
-    reviewForm: {
-        marginTop: "30px",
-        padding: "25px",
-        background: "#f8f8f8",
-        borderRadius: "10px"
-    },
-
-
-    formGroup: {
-        display: "flex",
-        flexDirection: "column",
-        gap: "8px",
-        marginBottom: "20px"
-    },
-
-
-    starSelector: {
-        display: "flex",
-        gap: "5px"
-    },
-
-
-    starButton: {
-        border: "none",
-        background: "transparent",
-        fontSize: "28px",
-        cursor: "pointer",
-        padding: "2px"
-    },
-
-
-    textarea: {
-        width: "100%",
-        padding: "12px",
-        borderRadius: "6px",
-        border: "1px solid #ccc",
-        resize: "vertical",
-        fontSize: "15px",
-        boxSizing: "border-box"
-    },
-
-
-    editButton: {
-        border: "none",
-        background: "#eee",
-        padding: "7px 12px",
-        borderRadius: "5px",
-        cursor: "pointer",
-        marginRight: "5px"
-    },
-
-
-    deleteButton: {
-        border: "none",
-        background: "#eee",
-        padding: "7px 12px",
-        borderRadius: "5px",
-        cursor: "pointer"
-    },
-
-
-    cancelButton: {
-        padding: "12px 20px",
-        border: "none",
-        borderRadius: "6px",
-        cursor: "pointer"
-    },
-
-
-    successMessage: {
-        padding: "12px",
-        marginBottom: "15px",
-        borderRadius: "6px",
-        background: "#e8f5e9",
-        color: "#2e7d32"
-    },
-
-
-    errorMessage: {
-        padding: "12px",
-        marginBottom: "15px",
-        borderRadius: "6px",
-        background: "#ffebee",
-        color: "#c62828"
-    },
-
-
-    note: {
-        marginTop: "20px",
-        color: "#666"
-    }
-
-};
 
 
 export default CourseDetail;

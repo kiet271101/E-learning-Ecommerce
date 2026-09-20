@@ -6,15 +6,20 @@ import {
     getCoursesController
 } from "../../controllers/courseController";
 
+import "../../styles/CourseList.css";
+
+
 function CourseList() {
 
-    const [courses, setCourses] = useState([]);
+    const [courses, setCourses] =
+        useState([]);
 
     const [loading, setLoading] =
         useState(true);
 
     const [error, setError] =
         useState("");
+
 
     // ==========================================
     // LOAD COURSES
@@ -24,26 +29,52 @@ function CourseList() {
 
         const loadCourses = async () => {
 
-            const result =
-                await getCoursesController();
+            try {
 
-            if (!result.success) {
+                const result =
+                    await getCoursesController();
 
-                setError(result.message);
+
+                if (!result.success) {
+
+                    setError(
+                        result.message
+                    );
+
+                    setLoading(false);
+
+                    return;
+                }
+
+
+                setCourses(
+                    result.data
+                );
+
+            } catch (error) {
+
+                console.error(
+                    "LOAD COURSES ERROR:",
+                    error
+                );
+
+                setError(
+                    "Không thể tải khóa học"
+                );
+
+            } finally {
 
                 setLoading(false);
 
-                return;
             }
 
-            setCourses(result.data);
-
-            setLoading(false);
         };
+
 
         loadCourses();
 
     }, []);
+
 
     // ==========================================
     // LOADING
@@ -52,13 +83,18 @@ function CourseList() {
     if (loading) {
 
         return (
-            <div style={styles.container}>
+
+            <div className="course-list-loading">
+
                 <h2>
                     Đang tải khóa học...
                 </h2>
+
             </div>
+
         );
     }
+
 
     // ==========================================
     // ERROR
@@ -67,7 +103,8 @@ function CourseList() {
     if (error) {
 
         return (
-            <div style={styles.container}>
+
+            <div className="course-list-error">
 
                 <h2>
                     Không thể tải khóa học
@@ -78,76 +115,71 @@ function CourseList() {
                 </p>
 
             </div>
+
         );
     }
+
 
     // ==========================================
     // VIEW
     // ==========================================
 
     return (
-        <div style={styles.container}>
 
-            <h1 style={styles.heading}>
-                Khóa học
-            </h1>
+        <main className="course-list-page">
 
-            <p style={styles.subtitle}>
-                Khám phá các khóa học trực tuyến
-            </p>
+            <div className="course-list-container">
 
-            {courses.length === 0 ? (
+                {/* ==================================
+                    PAGE HEADER
+                ================================== */}
 
-                <div>
-                    Chưa có khóa học nào.
-                </div>
+                <h1 className="course-list-heading">
+                    Khóa học
+                </h1>
 
-            ) : (
+                <p className="course-list-subtitle">
+                    Khám phá các khóa học trực tuyến
+                </p>
 
-                <div style={styles.grid}>
 
-                    {courses.map((course) => (
+                {/* ==================================
+                    COURSES
+                ================================== */}
 
-                        <CourseCard
-                            key={course.id}
-                            course={course}
-                        />
+                {courses.length === 0 ? (
 
-                    ))}
+                    <div className="course-list-empty">
 
-                </div>
+                        <p>
+                            Chưa có khóa học nào.
+                        </p>
 
-            )}
+                    </div>
 
-        </div>
+                ) : (
+
+                    <div className="course-list-grid">
+
+                        {courses.map((course) => (
+
+                            <CourseCard
+                                key={course.id}
+                                course={course}
+                            />
+
+                        ))}
+
+                    </div>
+
+                )}
+
+            </div>
+
+        </main>
+
     );
 }
 
-const styles = {
-
-    container: {
-        padding: "40px",
-        maxWidth: "1400px",
-        margin: "0 auto"
-    },
-
-    heading: {
-        fontSize: "32px",
-        marginBottom: "10px"
-    },
-
-    subtitle: {
-        color: "#666",
-        marginBottom: "30px"
-    },
-
-    grid: {
-        display: "grid",
-        gridTemplateColumns:
-            "repeat(auto-fill, minmax(280px, 1fr))",
-        gap: "25px"
-    }
-
-};
 
 export default CourseList;

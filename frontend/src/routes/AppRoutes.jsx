@@ -44,6 +44,8 @@ import TeacherLessonManagement
 
 import TeacherCourseEdit
     from "../views/teacher/TeacherCourseEdit";
+import StudentProfile
+    from "../views/student/StudentProfile";
 
 function AppRoutes() {
 
@@ -106,6 +108,10 @@ function AppRoutes() {
                             allowedRoles={["student"]}
                         />
                     }>
+                         <Route
+                            path="/student/profile"
+                            element={<StudentProfile />}
+                        />
 
                         <Route
                             path="/student"
@@ -127,6 +133,8 @@ function AppRoutes() {
                                 <LearningPage />
                             }
                         />
+
+                       
 
                     </Route>
 
@@ -174,7 +182,7 @@ function AppRoutes() {
                             }
                         />
 
-                        
+
 
                     </Route>
 

@@ -17,6 +17,7 @@ import {
     loadCourseProgressController
 } from "../../controllers/learningController";
 
+import "../../styles/LearningPage.css";
 
 // ==========================================
 // API BASE URL
@@ -964,7 +965,7 @@ function LearningPage() {
 
         return (
 
-            <div style={styles.center}>
+            <div className="learning-center">
 
                 <h2>
                     Đang tải khóa học...
@@ -985,18 +986,18 @@ function LearningPage() {
 
         return (
 
-            <div style={styles.center}>
+            <div className="learning-center">
 
                 <h2>
                     Không thể tải khóa học
                 </h2>
 
-                <p style={styles.errorText}>
+                <p className="learning-error-text">
                     {error}
                 </p>
 
                 <button
-                    style={styles.backButton}
+                    className="learning-back-button"
                     onClick={() =>
                         navigate("/my-courses")
                     }
@@ -1017,21 +1018,21 @@ function LearningPage() {
 
     return (
 
-        <div style={styles.page}>
+        <div className="learning-page">
 
             {/* ================================= */}
             {/* HEADER */}
             {/* ================================= */}
 
-            <header style={styles.header}>
+            <header className="learning-header">
 
                 <div>
 
-                    <h2 style={styles.logo}>
+                    <h2 className="learning-logo">
                         E-Learning
                     </h2>
 
-                    <p style={styles.subtitle}>
+                    <p className="learning-subtitle">
                         Khu vực học tập
                     </p>
 
@@ -1039,7 +1040,7 @@ function LearningPage() {
 
 
                 <button
-                    style={styles.backButton}
+                    className="learning-back-button"
                     onClick={() =>
                         navigate(
                             `/courses/${courseId}`
@@ -1056,15 +1057,15 @@ function LearningPage() {
             {/* COURSE PROGRESS */}
             {/* ================================= */}
 
-            <div style={styles.progressBox}>
+            <div className="learning-progress-box">
 
-                <div style={styles.progressHeader}>
+                <div className="learning-progress-header">
 
                     <strong>
                         Tiến độ khóa học
                     </strong>
 
-                    <span style={styles.progressText}>
+                    <span className="learning-progress-text">
 
                         {
                             courseProgress?.percentage
@@ -1077,26 +1078,19 @@ function LearningPage() {
 
 
                 <div
-                    style={
-                        styles.progressBackground
-                    }
+                    className="learning-progress-background"
                 >
 
                     <div
+                        className="learning-progress-bar"
                         style={{
-                            ...styles.progressBar,
-
-                            width:
-                                `${Math.min(
-                                    100,
-                                    Math.max(
-                                        0,
-                                        Number(
-                                            courseProgress?.percentage
-                                            ?? 0
-                                        )
-                                    )
-                                )}%`
+                            width: `${Math.min(
+                                100,
+                                Math.max(
+                                    0,
+                                    Number(courseProgress?.percentage ?? 0)
+                                )
+                            )}%`
                         }}
                     />
 
@@ -1128,13 +1122,13 @@ function LearningPage() {
             {/* MAIN */}
             {/* ================================= */}
 
-            <div style={styles.main}>
+            <div className="learning-main">
 
                 {/* ================================= */}
                 {/* SIDEBAR */}
                 {/* ================================= */}
 
-                <aside style={styles.sidebar}>
+                <aside className="learning-sidebar">
 
                     <h3>
                         Nội dung khóa học
@@ -1162,14 +1156,8 @@ function LearningPage() {
                                     <button
                                         key={lesson.id}
 
-                                        style={{
-                                            ...styles.lessonItem,
-
-                                            ...(isActive
-                                                ? styles.activeLesson
-                                                : {})
-                                        }}
-
+                                        className={`learning-lesson-item ${isActive ? "learning-lesson-item-active" : ""
+                                            }`}
                                         onClick={() =>
                                             handleSelectLesson(
                                                 lesson
@@ -1178,9 +1166,7 @@ function LearningPage() {
                                     >
 
                                         <div
-                                            style={
-                                                styles.lessonInfo
-                                            }
+                                            className="learning-lesson-info"
                                         >
 
                                             <strong>
@@ -1193,9 +1179,7 @@ function LearningPage() {
                                             </strong>
 
                                             <div
-                                                style={
-                                                    styles.lessonTitle
-                                                }
+                                                className=" learning-lesson-title"
                                             >
                                                 {
                                                     lesson.title
@@ -1206,9 +1190,7 @@ function LearningPage() {
 
 
                                         <div
-                                            style={
-                                                styles.lessonIcon
-                                            }
+                                            className="learning-lesson-icon"
                                         >
 
                                             {lesson.is_preview
@@ -1233,7 +1215,7 @@ function LearningPage() {
                 {/* CONTENT */}
                 {/* ================================= */}
 
-                <main style={styles.content}>
+                <main className="learning-content">
 
                     {selectedLesson ? (
 
@@ -1251,9 +1233,7 @@ function LearningPage() {
                             {selectedLesson.description && (
 
                                 <p
-                                    style={
-                                        styles.description
-                                    }
+                                    className="learning-description"
                                 >
                                     {
                                         selectedLesson.description
@@ -1268,23 +1248,17 @@ function LearningPage() {
                             {/* ================================= */}
 
                             <div
-                                style={
-                                    styles.videoContainer
-                                }
+                                className="learning-video-container"
                             >
 
                                 {videoLoading ? (
 
                                     <div
-                                        style={
-                                            styles.videoLoading
-                                        }
+                                        className="learning-video-loading"
                                     >
 
                                         <div
-                                            style={
-                                                styles.spinner
-                                            }
+                                            className="learning-spinner"
                                         />
 
                                         <p>
@@ -1296,9 +1270,7 @@ function LearningPage() {
                                 ) : videoError ? (
 
                                     <div
-                                        style={
-                                            styles.videoError
-                                        }
+                                        className="learning-video-error"
                                     >
 
                                         <h3>
@@ -1310,9 +1282,7 @@ function LearningPage() {
                                         </p>
 
                                         <button
-                                            style={
-                                                styles.retryButton
-                                            }
+                                            className="learning-retry-button"
                                             onClick={() =>
                                                 loadVideo(
                                                     selectedLesson.id
@@ -1333,9 +1303,7 @@ function LearningPage() {
 
                                         preload="metadata"
 
-                                        style={
-                                            styles.video
-                                        }
+                                        className="learning-video"
 
                                         src={videoUrl}
 
@@ -1360,9 +1328,7 @@ function LearningPage() {
                                 ) : (
 
                                     <div
-                                        style={
-                                            styles.videoLoading
-                                        }
+                                        className="learning-video-loading"
                                     >
 
                                         <p>
@@ -1381,15 +1347,11 @@ function LearningPage() {
                             {/* ================================= */}
 
                             <div
-                                style={
-                                    styles.lessonProgress
-                                }
+                                className="learning-lesson-progress"
                             >
 
                                 <div
-                                    style={
-                                        styles.lessonProgressHeader
-                                    }
+                                    className="learning-lesson-progress-header"
                                 >
 
                                     <strong>
@@ -1424,9 +1386,7 @@ function LearningPage() {
                                 {savingProgress && (
 
                                     <small
-                                        style={
-                                            styles.savingText
-                                        }
+                                        className="learning-saving-text"
                                     >
                                         Đang lưu tiến độ...
                                     </small>
@@ -1441,9 +1401,7 @@ function LearningPage() {
                             {/* ================================= */}
 
                             <div
-                                style={
-                                    styles.materialSection
-                                }
+                                className="learning-material-section"
                             >
 
                                 <h2>
@@ -1460,9 +1418,7 @@ function LearningPage() {
                                 ) : materials.length === 0 ? (
 
                                     <p
-                                        style={
-                                            styles.emptyText
-                                        }
+                                        className="learning-empty-text"
                                     >
                                         Bài học chưa có tài liệu.
                                     </p>
@@ -1477,21 +1433,15 @@ function LearningPage() {
                                                     material.id
                                                 }
 
-                                                style={
-                                                    styles.material
-                                                }
+                                                className="learning-material"
                                             >
 
                                                 <div
-                                                    style={
-                                                        styles.materialInfo
-                                                    }
+                                                    className="learning-material-info"
                                                 >
 
                                                     <span
-                                                        style={
-                                                            styles.fileIcon
-                                                        }
+                                                        className="learning-file-icon"
                                                     >
                                                         📄
                                                     </span>
@@ -1509,9 +1459,7 @@ function LearningPage() {
                                                         {material.file_type && (
 
                                                             <small
-                                                                style={
-                                                                    styles.fileType
-                                                                }
+                                                                className="learning-file-type"
                                                             >
                                                                 {
                                                                     material.file_type
@@ -1526,9 +1474,7 @@ function LearningPage() {
 
 
                                                 <button
-                                                    style={
-                                                        styles.downloadButton
-                                                    }
+                                                    className="learning-download-button"
 
                                                     onClick={() =>
                                                         handleDownload(
@@ -1552,7 +1498,7 @@ function LearningPage() {
 
                     ) : (
 
-                        <div style={styles.emptyLesson}>
+                        <div className="learning-empty-lesson">
 
                             <h2>
                                 Chưa có bài học
@@ -1581,349 +1527,7 @@ function LearningPage() {
 // STYLES
 // ==========================================
 
-const styles = {
 
-    page: {
-        minHeight: "100vh",
-        background: "#f5f5f5"
-    },
-
-
-    // ----------------------------------------
-    // HEADER
-    // ----------------------------------------
-
-    header: {
-        background: "#fff",
-        padding: "20px 40px",
-        display: "flex",
-        justifyContent: "space-between",
-        alignItems: "center",
-        borderBottom: "1px solid #ddd"
-    },
-
-
-    logo: {
-        margin: 0
-    },
-
-
-    subtitle: {
-        margin: "5px 0 0",
-        color: "#666"
-    },
-
-
-    backButton: {
-        padding: "10px 16px",
-        cursor: "pointer",
-        border: "1px solid #ccc",
-        borderRadius: "6px",
-        background: "#fff"
-    },
-
-
-    // ----------------------------------------
-    // COURSE PROGRESS
-    // ----------------------------------------
-
-    progressBox: {
-        background: "#fff",
-        padding: "20px 40px",
-        borderBottom: "1px solid #ddd"
-    },
-
-
-    progressHeader: {
-        display: "flex",
-        justifyContent: "space-between",
-        alignItems: "center"
-    },
-
-
-    progressText: {
-        fontWeight: "bold"
-    },
-
-
-    progressBackground: {
-        height: "10px",
-        background: "#ddd",
-        borderRadius: "10px",
-        margin: "10px 0",
-        overflow: "hidden"
-    },
-
-
-    progressBar: {
-        height: "100%",
-        background: "#333",
-        borderRadius: "10px",
-        transition: "width 0.3s ease"
-    },
-
-
-    // ----------------------------------------
-    // MAIN
-    // ----------------------------------------
-
-    main: {
-        display: "grid",
-        gridTemplateColumns: "320px 1fr",
-        minHeight: "calc(100vh - 200px)"
-    },
-
-
-    // ----------------------------------------
-    // SIDEBAR
-    // ----------------------------------------
-
-    sidebar: {
-        background: "#fff",
-        borderRight: "1px solid #ddd",
-        padding: "20px",
-        overflowY: "auto"
-    },
-
-
-    lessonItem: {
-        width: "100%",
-        padding: "15px",
-        marginBottom: "8px",
-        textAlign: "left",
-        border: "1px solid #ddd",
-        borderRadius: "6px",
-        background: "#fff",
-        cursor: "pointer",
-        display: "flex",
-        justifyContent: "space-between",
-        alignItems: "center"
-    },
-
-
-    activeLesson: {
-        border: "2px solid #333",
-        background: "#fafafa"
-    },
-
-
-    lessonInfo: {
-        flex: 1
-    },
-
-
-    lessonTitle: {
-        marginTop: "5px",
-        lineHeight: "1.4"
-    },
-
-
-    lessonIcon: {
-        marginLeft: "10px"
-    },
-
-
-    // ----------------------------------------
-    // CONTENT
-    // ----------------------------------------
-
-    content: {
-        padding: "35px",
-        maxWidth: "1000px",
-        width: "100%",
-        boxSizing: "border-box"
-    },
-
-
-    description: {
-        color: "#666",
-        lineHeight: "1.6"
-    },
-
-
-    // ----------------------------------------
-    // VIDEO
-    // ----------------------------------------
-
-    videoContainer: {
-        background: "#000",
-        width: "100%",
-        marginTop: "25px",
-        minHeight: "300px",
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center"
-    },
-
-
-    video: {
-        width: "100%",
-        maxHeight: "600px",
-        display: "block"
-    },
-
-
-    videoLoading: {
-        minHeight: "300px",
-        width: "100%",
-        display: "flex",
-        flexDirection: "column",
-        alignItems: "center",
-        justifyContent: "center",
-        color: "#fff"
-    },
-
-
-    videoError: {
-        minHeight: "300px",
-        width: "100%",
-        display: "flex",
-        flexDirection: "column",
-        alignItems: "center",
-        justifyContent: "center",
-        color: "#fff",
-        padding: "30px",
-        boxSizing: "border-box",
-        textAlign: "center"
-    },
-
-
-    spinner: {
-        width: "35px",
-        height: "35px",
-        border: "4px solid #ddd",
-        borderTop: "4px solid #333",
-        borderRadius: "50%"
-    },
-
-
-    retryButton: {
-        marginTop: "10px",
-        padding: "10px 18px",
-        border: "none",
-        borderRadius: "6px",
-        cursor: "pointer"
-    },
-
-
-    // ----------------------------------------
-    // LESSON PROGRESS
-    // ----------------------------------------
-
-    lessonProgress: {
-        background: "#fff",
-        padding: "20px",
-        marginTop: "20px",
-        borderRadius: "8px"
-    },
-
-
-    lessonProgressHeader: {
-        marginBottom: "8px"
-    },
-
-
-    savingText: {
-        display: "block",
-        marginTop: "8px",
-        color: "#666"
-    },
-
-
-    // ----------------------------------------
-    // MATERIALS
-    // ----------------------------------------
-
-    materialSection: {
-        background: "#fff",
-        padding: "25px",
-        marginTop: "20px",
-        borderRadius: "8px"
-    },
-
-
-    material: {
-        display: "flex",
-        justifyContent: "space-between",
-        alignItems: "center",
-        padding: "15px 0",
-        borderBottom: "1px solid #eee",
-        gap: "15px"
-    },
-
-
-    materialInfo: {
-        display: "flex",
-        alignItems: "center",
-        gap: "10px",
-        minWidth: 0
-    },
-
-
-    fileIcon: {
-        fontSize: "24px"
-    },
-
-
-    fileType: {
-        display: "block",
-        marginTop: "4px",
-        color: "#777"
-    },
-
-
-    downloadButton: {
-        padding: "9px 15px",
-        border: "1px solid #ccc",
-        borderRadius: "6px",
-        background: "#fff",
-        cursor: "pointer",
-        whiteSpace: "nowrap"
-    },
-
-
-    // ----------------------------------------
-    // EMPTY
-    // ----------------------------------------
-
-    emptyText: {
-        color: "#777"
-    },
-
-
-    emptyLesson: {
-        background: "#fff",
-        padding: "40px",
-        borderRadius: "8px",
-        textAlign: "center"
-    },
-
-
-    // ----------------------------------------
-    // ERROR
-    // ----------------------------------------
-
-    errorText: {
-        color: "#c00",
-        marginBottom: "20px"
-    },
-
-
-    // ----------------------------------------
-    // CENTER
-    // ----------------------------------------
-
-    center: {
-        minHeight: "100vh",
-        display: "flex",
-        flexDirection: "column",
-        alignItems: "center",
-        justifyContent: "center",
-        padding: "20px",
-        boxSizing: "border-box"
-    }
-
-};
 
 
 export default LearningPage;

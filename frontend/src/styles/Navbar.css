@@ -1,0 +1,322 @@
+/* =========================================
+   NAVBAR
+========================================= */
+
+.navbar {
+    min-height: 65px;
+    padding: 0 30px;
+
+    background: #ffffff;
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    border-bottom: 1px solid #e5e7eb;
+
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+}
+
+
+/* =========================================
+   LOGO
+========================================= */
+
+.navbar-logo-wrapper {
+    display: flex;
+    align-items: center;
+}
+
+.navbar-logo {
+    color: #2563eb;
+
+    font-size: 23px;
+    font-weight: 800;
+
+    text-decoration: none;
+
+    letter-spacing: -0.3px;
+
+    transition: color 0.2s ease;
+}
+
+.navbar-logo:hover {
+    color: #1d4ed8;
+}
+
+
+/* =========================================
+   NAVIGATION LINKS
+========================================= */
+
+.navbar-links {
+    display: flex;
+    align-items: center;
+
+    gap: 18px;
+}
+
+.navbar-link {
+    color: #374151;
+
+    font-size: 14px;
+    font-weight: 500;
+
+    text-decoration: none;
+
+    padding: 8px 4px;
+
+    transition:
+        color 0.2s ease,
+        background 0.2s ease;
+}
+
+.navbar-link:hover {
+    color: #2563eb;
+}
+
+
+/* =========================================
+   REGISTER BUTTON
+========================================= */
+
+.navbar-register-button {
+    padding: 9px 16px;
+
+    background: #2563eb;
+    color: #ffffff;
+
+    border-radius: 8px;
+
+    font-size: 14px;
+    font-weight: 600;
+
+    text-decoration: none;
+
+    transition:
+        background 0.2s ease,
+        transform 0.2s ease;
+}
+
+.navbar-register-button:hover {
+    background: #1d4ed8;
+
+    transform: translateY(-1px);
+}
+
+
+/* =========================================
+   USER AREA
+========================================= */
+
+.navbar-user {
+    display: flex;
+    align-items: center;
+
+    gap: 10px;
+
+    margin-left: 4px;
+}
+
+.navbar-greeting {
+    color: #4b5563;
+
+    font-size: 14px;
+
+    white-space: nowrap;
+}
+
+.navbar-greeting strong {
+    color: #111827;
+    font-weight: 600;
+}
+
+
+/* =========================================
+   PROFILE BUTTON
+========================================= */
+
+.navbar-profile-button {
+    border: 1px solid #dbe3ef;
+
+    border-radius: 8px;
+
+    padding: 8px 12px;
+
+    background: #f8fafc;
+    color: #374151;
+
+    font-size: 14px;
+    font-weight: 600;
+
+    cursor: pointer;
+
+    transition:
+        background 0.2s ease,
+        color 0.2s ease,
+        border-color 0.2s ease,
+        transform 0.2s ease;
+}
+
+.navbar-profile-button:hover {
+    background: #eff6ff;
+    color: #2563eb;
+
+    border-color: #bfdbfe;
+
+    transform: translateY(-1px);
+}
+
+
+/* =========================================
+   LOGOUT BUTTON
+========================================= */
+
+.navbar-logout-button {
+    border: none;
+
+    border-radius: 8px;
+
+    padding: 8px 12px;
+
+    background: #ef4444;
+    color: #ffffff;
+
+    font-size: 14px;
+    font-weight: 600;
+
+    cursor: pointer;
+
+    transition:
+        background 0.2s ease,
+        transform 0.2s ease;
+}
+
+.navbar-logout-button:hover {
+    background: #dc2626;
+
+    transform: translateY(-1px);
+}
+
+
+/* =========================================
+   BUTTON ACTIVE
+========================================= */
+
+.navbar-profile-button:active,
+.navbar-logout-button:active,
+.navbar-register-button:active {
+    transform: translateY(0);
+}
+
+
+/* =========================================
+   TABLET
+========================================= */
+
+@media (max-width: 1100px) {
+
+    .navbar {
+        padding: 0 20px;
+    }
+
+    .navbar-links {
+        gap: 12px;
+    }
+
+    .navbar-greeting {
+        display: none;
+    }
+}
+
+
+/* =========================================
+   MOBILE
+========================================= */
+
+@media (max-width: 768px) {
+
+    .navbar {
+        min-height: auto;
+
+        padding: 14px 18px;
+
+        align-items: flex-start;
+
+        flex-direction: column;
+
+        gap: 12px;
+    }
+
+    .navbar-logo {
+        font-size: 21px;
+    }
+
+    .navbar-links {
+        width: 100%;
+
+        display: flex;
+
+        flex-wrap: wrap;
+
+        gap: 8px;
+    }
+
+    .navbar-link {
+        padding: 7px 5px;
+
+        font-size: 13px;
+    }
+
+    .navbar-user {
+        width: 100%;
+
+        margin-left: 0;
+
+        flex-wrap: wrap;
+
+        gap: 8px;
+    }
+
+    .navbar-profile-button,
+    .navbar-logout-button {
+        padding: 7px 10px;
+
+        font-size: 13px;
+    }
+}
+
+
+/* =========================================
+   SMALL MOBILE
+========================================= */
+
+@media (max-width: 480px) {
+
+    .navbar-links {
+        gap: 6px;
+    }
+
+    .navbar-link {
+        font-size: 12px;
+    }
+
+    .navbar-register-button {
+        padding: 7px 12px;
+
+        font-size: 12px;
+    }
+
+    .navbar-user {
+        gap: 6px;
+    }
+
+    .navbar-profile-button,
+    .navbar-logout-button {
+        font-size: 12px;
+    }
+}

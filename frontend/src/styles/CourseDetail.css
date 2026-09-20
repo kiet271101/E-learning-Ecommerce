@@ -1,0 +1,670 @@
+/* ==========================================
+   COURSE DETAIL PAGE
+========================================== */
+
+.course-detail-page {
+    min-height: calc(100vh - 70px);
+    background: #f5f7fb;
+    padding: 40px 24px 60px;
+    box-sizing: border-box;
+}
+
+.course-detail-container {
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+
+/* ==========================================
+   LOADING / ERROR
+========================================== */
+
+.course-detail-loading,
+.course-detail-error {
+    min-height: calc(100vh - 70px);
+
+    display: flex;
+    flex-direction: column;
+
+    align-items: center;
+    justify-content: center;
+
+    padding: 30px;
+
+    background: #f5f7fb;
+}
+
+.course-detail-error {
+    text-align: center;
+}
+
+.course-detail-error h2 {
+    color: #dc2626;
+}
+
+.course-detail-error p {
+    color: #6b7280;
+}
+
+
+/* ==========================================
+   COURSE HEADER
+========================================== */
+
+.course-detail-header {
+    display: grid;
+
+    grid-template-columns:
+        minmax(320px, 1fr) 1.5fr;
+
+    gap: 40px;
+
+    background: #ffffff;
+
+    padding: 30px;
+
+    border-radius: 16px;
+
+    border: 1px solid #e5e7eb;
+
+    box-shadow:
+        0 4px 16px rgba(0, 0, 0, 0.06);
+
+    box-sizing: border-box;
+}
+
+
+/* ==========================================
+   THUMBNAIL
+========================================== */
+
+.course-detail-thumbnail {
+    width: 100%;
+    height: 320px;
+
+    background: #eef0f3;
+
+    border-radius: 12px;
+
+    overflow: hidden;
+}
+
+.course-detail-image {
+    width: 100%;
+    height: 100%;
+
+    object-fit: cover;
+
+    display: block;
+}
+
+.course-detail-no-image {
+    width: 100%;
+    height: 100%;
+
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+
+    color: #6b7280;
+
+    font-size: 16px;
+}
+
+
+/* ==========================================
+   COURSE INFORMATION
+========================================== */
+
+.course-detail-info {
+    display: flex;
+    flex-direction: column;
+
+    gap: 14px;
+}
+
+.course-detail-title {
+    margin: 0;
+
+    font-size: 34px;
+    line-height: 1.25;
+
+    color: #111827;
+}
+
+.course-detail-description {
+    margin: 0;
+
+    color: #6b7280;
+
+    font-size: 16px;
+
+    line-height: 1.7;
+}
+
+.course-detail-meta {
+    margin: 0;
+
+    color: #374151;
+
+    line-height: 1.6;
+}
+
+.course-detail-rating {
+    font-size: 17px;
+
+    color: #374151;
+
+    margin-top: 4px;
+}
+
+.course-detail-price {
+    margin-top: 5px;
+
+    font-size: 30px;
+
+    font-weight: 700;
+
+    color: #111827;
+}
+
+
+/* ==========================================
+   PRIMARY BUTTON
+========================================== */
+
+.course-detail-primary-button {
+    width: fit-content;
+
+    min-width: 200px;
+
+    padding: 12px 22px;
+
+    border: none;
+
+    border-radius: 8px;
+
+    background: #2563eb;
+
+    color: #ffffff;
+
+    font-size: 16px;
+
+    font-weight: 600;
+
+    cursor: pointer;
+
+    transition:
+        background 0.2s ease,
+        transform 0.2s ease;
+}
+
+.course-detail-primary-button:hover {
+    background: #1d4ed8;
+
+    transform: translateY(-1px);
+}
+
+.course-detail-primary-button:disabled {
+    background: #93c5fd;
+
+    cursor: not-allowed;
+
+    transform: none;
+}
+
+
+/* ==========================================
+   SECTION
+========================================== */
+
+.course-detail-section {
+    margin-top: 30px;
+
+    padding: 30px;
+
+    background: #ffffff;
+
+    border-radius: 16px;
+
+    border: 1px solid #e5e7eb;
+
+    box-shadow:
+        0 3px 12px rgba(0, 0, 0, 0.04);
+
+    box-sizing: border-box;
+}
+
+.course-detail-section-title {
+    margin: 0 0 8px;
+
+    font-size: 24px;
+
+    color: #111827;
+}
+
+.course-detail-section-subtitle {
+    margin: 0 0 20px;
+
+    color: #6b7280;
+}
+
+
+/* ==========================================
+   LESSONS
+========================================== */
+
+.course-detail-lesson-list {
+    border-top: 1px solid #e5e7eb;
+}
+
+.course-detail-lesson {
+    display: flex;
+
+    justify-content: space-between;
+    align-items: center;
+
+    gap: 20px;
+
+    padding: 17px 8px;
+
+    border-bottom: 1px solid #e5e7eb;
+}
+
+.course-detail-lesson:last-child {
+    border-bottom: none;
+}
+
+.course-detail-lesson-title {
+    color: #1f2937;
+
+    line-height: 1.5;
+}
+
+.course-detail-lesson-access {
+    flex-shrink: 0;
+
+    color: #6b7280;
+
+    font-size: 14px;
+}
+
+.course-detail-empty {
+    padding: 25px 0;
+
+    color: #6b7280;
+
+    text-align: center;
+}
+
+
+/* ==========================================
+   REVIEW SUMMARY
+========================================== */
+
+.course-detail-review-summary {
+    display: flex;
+
+    align-items: center;
+
+    gap: 30px;
+
+    margin: 20px 0;
+
+    padding: 20px;
+
+    background: #f8fafc;
+
+    border-radius: 10px;
+}
+
+.course-detail-average-rating {
+    font-size: 26px;
+
+    font-weight: 700;
+
+    color: #111827;
+}
+
+.course-detail-total-reviews {
+    color: #6b7280;
+}
+
+
+/* ==========================================
+   REVIEW MESSAGE
+========================================== */
+
+.course-detail-success-message,
+.course-detail-error-message {
+    padding: 12px 15px;
+
+    margin-bottom: 15px;
+
+    border-radius: 8px;
+
+    font-size: 14px;
+}
+
+.course-detail-success-message {
+    background: #ecfdf5;
+
+    color: #047857;
+
+    border: 1px solid #a7f3d0;
+}
+
+.course-detail-error-message {
+    background: #fef2f2;
+
+    color: #b91c1c;
+
+    border: 1px solid #fecaca;
+}
+
+
+/* ==========================================
+   REVIEW
+========================================== */
+
+.course-detail-review {
+    padding: 20px 0;
+
+    border-bottom: 1px solid #e5e7eb;
+}
+
+.course-detail-review:last-child {
+    border-bottom: none;
+}
+
+.course-detail-review-header {
+    display: flex;
+
+    justify-content: space-between;
+    align-items: flex-start;
+
+    gap: 20px;
+}
+
+.course-detail-review-user {
+    font-weight: 600;
+
+    color: #111827;
+}
+
+.course-detail-review-stars {
+    margin-top: 5px;
+}
+
+.course-detail-review-comment {
+    margin: 12px 0 0;
+
+    color: #4b5563;
+
+    line-height: 1.6;
+}
+
+
+/* ==========================================
+   REVIEW ACTIONS
+========================================== */
+
+.course-detail-edit-button,
+.course-detail-delete-button,
+.course-detail-cancel-button {
+    padding: 7px 12px;
+
+    border: none;
+
+    border-radius: 6px;
+
+    cursor: pointer;
+
+    font-size: 14px;
+}
+
+.course-detail-edit-button {
+    background: #eff6ff;
+
+    color: #2563eb;
+
+    margin-right: 6px;
+}
+
+.course-detail-edit-button:hover {
+    background: #dbeafe;
+}
+
+.course-detail-delete-button {
+    background: #fef2f2;
+
+    color: #dc2626;
+}
+
+.course-detail-delete-button:hover {
+    background: #fee2e2;
+}
+
+
+/* ==========================================
+   REVIEW FORM
+========================================== */
+
+.course-detail-review-form {
+    margin-top: 30px;
+
+    padding: 25px;
+
+    background: #f8fafc;
+
+    border: 1px solid #e5e7eb;
+
+    border-radius: 12px;
+}
+
+.course-detail-review-form-title {
+    margin: 0 0 20px;
+
+    font-size: 20px;
+
+    color: #111827;
+}
+
+.course-detail-form-group {
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 8px;
+
+    margin-bottom: 20px;
+}
+
+.course-detail-form-label {
+    font-weight: 600;
+
+    color: #374151;
+}
+
+
+/* ==========================================
+   STAR SELECTOR
+========================================== */
+
+.course-detail-star-selector {
+    display: flex;
+
+    gap: 4px;
+}
+
+.course-detail-star-button {
+    padding: 2px;
+
+    border: none;
+
+    background: transparent;
+
+    font-size: 28px;
+
+    cursor: pointer;
+
+    transition:
+        transform 0.15s ease,
+        opacity 0.15s ease;
+}
+
+.course-detail-star-button:hover {
+    transform: scale(1.15);
+}
+
+
+/* ==========================================
+   TEXTAREA
+========================================== */
+
+.course-detail-textarea {
+    width: 100%;
+
+    min-height: 120px;
+
+    box-sizing: border-box;
+
+    padding: 12px;
+
+    border: 1px solid #d1d5db;
+
+    border-radius: 8px;
+
+    background: #ffffff;
+
+    font-family: inherit;
+
+    font-size: 15px;
+
+    line-height: 1.5;
+
+    resize: vertical;
+
+    outline: none;
+}
+
+.course-detail-textarea:focus {
+    border-color: #2563eb;
+
+    box-shadow:
+        0 0 0 3px rgba(37, 99, 235, 0.1);
+}
+
+
+/* ==========================================
+   REVIEW FORM BUTTONS
+========================================== */
+
+.course-detail-review-actions {
+    display: flex;
+
+    align-items: center;
+
+    gap: 10px;
+
+    flex-wrap: wrap;
+}
+
+.course-detail-cancel-button {
+    padding: 12px 20px;
+
+    background: #e5e7eb;
+
+    color: #374151;
+}
+
+.course-detail-cancel-button:hover {
+    background: #d1d5db;
+}
+
+
+/* ==========================================
+   NOTE
+========================================== */
+
+.course-detail-note {
+    margin-top: 20px;
+
+    padding: 12px 15px;
+
+    background: #fffbeb;
+
+    border: 1px solid #fde68a;
+
+    border-radius: 8px;
+
+    color: #92400e;
+}
+
+
+/* ==========================================
+   RESPONSIVE
+========================================== */
+
+@media (max-width: 900px) {
+
+    .course-detail-header {
+        grid-template-columns: 1fr;
+
+        gap: 25px;
+    }
+
+    .course-detail-thumbnail {
+        height: 300px;
+    }
+
+    .course-detail-title {
+        font-size: 28px;
+    }
+}
+
+
+@media (max-width: 600px) {
+
+    .course-detail-page {
+        padding: 25px 15px 40px;
+    }
+
+    .course-detail-header,
+    .course-detail-section {
+        padding: 20px;
+    }
+
+    .course-detail-thumbnail {
+        height: 220px;
+    }
+
+    .course-detail-title {
+        font-size: 24px;
+    }
+
+    .course-detail-price {
+        font-size: 25px;
+    }
+
+    .course-detail-lesson {
+        flex-direction: column;
+
+        align-items: flex-start;
+
+        gap: 8px;
+    }
+
+    .course-detail-review-header {
+        flex-direction: column;
+    }
+
+    .course-detail-review-summary {
+        gap: 15px;
+    }
+
+    .course-detail-primary-button {
+        width: 100%;
+    }
+}

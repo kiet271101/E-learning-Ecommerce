@@ -1,95 +1,146 @@
 import { Link, useNavigate } from "react-router-dom";
 
 import authService from "../services/authService";
+import "../styles/Navbar.css";
 
 function Navbar() {
-
     const navigate = useNavigate();
 
     const user = authService.getCurrentUser();
 
-    const isLoggedIn =
-        authService.isLoggedIn();
+    const isLoggedIn = authService.isLoggedIn();
 
     const handleLogout = () => {
-
         authService.logout();
 
         navigate("/login");
     };
 
+    const handleProfile = () => {
+        navigate("/student/profile");
+    };
+
     return (
-        <nav style={styles.navbar}>
+        <nav className="navbar">
 
-            <div>
-
+            {/* LOGO */}
+            <div className="navbar-logo-wrapper">
                 <Link
                     to="/"
-                    style={styles.logo}
+                    className="navbar-logo"
                 >
                     E-Learning
                 </Link>
-
             </div>
 
-            <div style={styles.links}>
+            {/* MENU */}
+            <div className="navbar-links">
 
-                <Link to="/">
+                <Link
+                    to="/"
+                    className="navbar-link"
+                >
                     Trang chủ
                 </Link>
 
-                <Link to="/courses">
+                <Link
+                    to="/courses"
+                    className="navbar-link"
+                >
                     Khóa học
                 </Link>
 
+                {/* CHƯA ĐĂNG NHẬP */}
                 {!isLoggedIn && (
                     <>
-                        <Link to="/login">
+                        <Link
+                            to="/login"
+                            className="navbar-link"
+                        >
                             Đăng nhập
                         </Link>
 
-                        <Link to="/register">
+                        <Link
+                            to="/register"
+                            className="navbar-register-button"
+                        >
                             Đăng ký
                         </Link>
                     </>
                 )}
 
+                {/* ĐÃ ĐĂNG NHẬP */}
                 {isLoggedIn && (
                     <>
 
+                        {/* STUDENT */}
                         {user?.role === "student" && (
                             <>
-                                <Link to="/student">
+                                <Link
+                                    to="/student"
+                                    className="navbar-link"
+                                >
                                     Dashboard
                                 </Link>
 
-                                <Link to="/my-courses">
+                                <Link
+                                    to="/my-courses"
+                                    className="navbar-link"
+                                >
                                     Khóa học của tôi
                                 </Link>
                             </>
                         )}
 
+                        {/* TEACHER */}
                         {user?.role === "teacher" && (
-                            <Link to="/teacher">
+                            <Link
+                                to="/teacher"
+                                className="navbar-link"
+                            >
                                 Giáo viên
                             </Link>
                         )}
 
+                        {/* ADMIN */}
                         {user?.role === "admin" && (
-                            <Link to="/admin">
+                            <Link
+                                to="/admin"
+                                className="navbar-link"
+                            >
                                 Quản trị
                             </Link>
                         )}
 
-                        <span>
-                            Xin chào, {user?.name}
-                        </span>
+                        {/* USER AREA */}
+                        <div className="navbar-user">
 
-                        <button
-                            onClick={handleLogout}
-                        >
-                            Đăng xuất
-                        </button>
+                            <span className="navbar-greeting">
+                                Xin chào,{" "}
+                                <strong>
+                                    {user?.name}
+                                </strong>
+                            </span>
+
+                            {/* PROFILE */}
+                            <button
+                                type="button"
+                                className="navbar-profile-button"
+                                onClick={handleProfile}
+                            >
+                                👤 Hồ sơ
+                            </button>
+
+                            {/* LOGOUT */}
+                            <button
+                                type="button"
+                                className="navbar-logout-button"
+                                onClick={handleLogout}
+                            >
+                                Đăng xuất
+                            </button>
+
+                        </div>
 
                     </>
                 )}
@@ -99,32 +150,5 @@ function Navbar() {
         </nav>
     );
 }
-
-const styles = {
-
-    navbar: {
-        height: "65px",
-        padding: "0 30px",
-        background: "#ffffff",
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "space-between",
-        boxShadow: "0 2px 8px rgba(0,0,0,0.1)"
-    },
-
-    logo: {
-        fontSize: "22px",
-        fontWeight: "bold",
-        textDecoration: "none",
-        color: "#222"
-    },
-
-    links: {
-        display: "flex",
-        alignItems: "center",
-        gap: "20px"
-    }
-
-};
 
 export default Navbar;

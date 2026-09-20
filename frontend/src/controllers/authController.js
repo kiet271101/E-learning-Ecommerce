@@ -146,6 +146,123 @@ export const loginController = async (formData) => {
 // LOGOUT
 // ==========================================
 
+// ==========================================
+// GET PROFILE
+// ==========================================
+
+export const getProfileController = async () => {
+
+    try {
+
+        const result =
+            await authService.getProfile();
+
+        return {
+            success: true,
+            data: result
+        };
+
+    } catch (error) {
+
+        console.error(
+            "GET PROFILE ERROR:",
+            error.response?.data || error
+        );
+
+        return {
+            success: false,
+            message:
+                error.response?.data?.message ||
+                "Không thể tải thông tin cá nhân"
+        };
+    }
+};
+
+
+// ==========================================
+// UPDATE PROFILE
+// ==========================================
+
+export const updateProfileController = async (
+    data
+) => {
+
+    try {
+
+        const result =
+            await authService.updateProfile(
+                data
+            );
+
+
+        // Cập nhật localStorage
+        if (result?.data) {
+
+            localStorage.setItem(
+                "user",
+                JSON.stringify(result.data)
+            );
+        }
+
+
+        return {
+            success: true,
+            data: result
+        };
+
+    } catch (error) {
+
+        console.error(
+            "UPDATE PROFILE ERROR:",
+            error.response?.data || error
+        );
+
+        return {
+            success: false,
+            message:
+                error.response?.data?.message ||
+                "Cập nhật thông tin thất bại"
+        };
+    }
+};
+
+
+// ==========================================
+// CHANGE PASSWORD
+// ==========================================
+
+export const changePasswordController = async (
+    data
+) => {
+
+    try {
+
+        const result =
+            await authService.changePassword(
+                data
+            );
+
+        return {
+            success: true,
+            data: result
+        };
+
+    } catch (error) {
+
+        console.error(
+            "CHANGE PASSWORD ERROR:",
+            error.response?.data || error
+        );
+
+        return {
+            success: false,
+            message:
+                error.response?.data?.message ||
+                "Đổi mật khẩu thất bại"
+        };
+    }
+};
+
 export const logoutController = () => {
 
     authService.logout();

@@ -86,8 +86,135 @@ const login = async (req, res) => {
     }
 };
 
+// ==========================================
+// GET CURRENT USER
+// ==========================================
+
+const getCurrentUser = async (req, res) => {
+
+    try {
+
+        const user =
+            await authService.getCurrentUser(
+                req.user.id
+            );
+
+        return res.status(200).json({
+
+            success: true,
+
+            data: user
+
+        });
+
+    } catch (error) {
+
+        return res.status(404).json({
+
+            success: false,
+
+            message: error.message
+
+        });
+    }
+};
+
+
+// ==========================================
+// UPDATE PROFILE
+// ==========================================
+
+const updateProfile = async (req, res) => {
+
+    try {
+
+        const {
+            name,
+            email
+        } = req.body;
+
+
+        const user =
+            await authService.updateProfile(
+                req.user.id,
+                {
+                    name,
+                    email
+                }
+            );
+
+
+        return res.status(200).json({
+
+            success: true,
+
+            message:
+                "Cập nhật thông tin thành công",
+
+            data: user
+
+        });
+
+    } catch (error) {
+
+        return res.status(400).json({
+
+            success: false,
+
+            message: error.message
+
+        });
+    }
+};
+
+
+// ==========================================
+// CHANGE PASSWORD
+// ==========================================
+
+const changePassword = async (req, res) => {
+
+    try {
+
+        const {
+            currentPassword,
+            newPassword
+        } = req.body;
+
+
+        await authService.changePassword(
+            req.user.id,
+            currentPassword,
+            newPassword
+        );
+
+
+        return res.status(200).json({
+
+            success: true,
+
+            message:
+                "Đổi mật khẩu thành công"
+
+        });
+
+    } catch (error) {
+
+        return res.status(400).json({
+
+            success: false,
+
+            message: error.message
+
+        });
+    }
+};
+
 
 module.exports = {
     register,
-    login
+    login,
+    getCurrentUser,
+    updateProfile,
+    changePassword
 };

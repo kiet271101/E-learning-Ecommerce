@@ -56,6 +56,50 @@ const isLoggedIn = () => {
     return !!localStorage.getItem("token");
 };
 
+// ==========================================
+// GET CURRENT USER
+// ==========================================
+
+const getProfile = async () => {
+
+    const response =
+        await api.get("/auth/me");
+
+    return response.data;
+};
+
+
+// ==========================================
+// UPDATE PROFILE
+// ==========================================
+
+const updateProfile = async (data) => {
+
+    const response =
+        await api.put(
+            "/auth/profile",
+            data
+        );
+
+    return response.data;
+};
+
+
+// ==========================================
+// CHANGE PASSWORD
+// ==========================================
+
+const changePassword = async (data) => {
+
+    const response =
+        await api.put(
+            "/auth/change-password",
+            data
+        );
+
+    return response.data;
+};
+
 
 export default {
     register,
@@ -63,5 +107,8 @@ export default {
     logout,
     getCurrentUser,
     getToken,
-    isLoggedIn
+    isLoggedIn,
+    getProfile,
+    updateProfile,
+    changePassword
 };

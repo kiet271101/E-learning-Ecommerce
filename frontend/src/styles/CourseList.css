@@ -1,0 +1,151 @@
+/* ==========================================
+   COURSE LIST PAGE
+========================================== */
+
+.course-list-page {
+    min-height: calc(100vh - 70px);
+    background: #f5f7fb;
+    padding: 40px 24px 60px;
+    box-sizing: border-box;
+}
+
+.course-list-container {
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+
+/* ==========================================
+   HEADER
+========================================== */
+
+.course-list-heading {
+    margin: 0;
+    font-size: 32px;
+    font-weight: 700;
+    color: #111827;
+}
+
+.course-list-subtitle {
+    margin: 8px 0 30px;
+    color: #6b7280;
+    font-size: 16px;
+}
+
+
+/* ==========================================
+   COURSE GRID
+========================================== */
+
+.course-list-grid {
+    display: grid;
+
+    grid-template-columns:
+        repeat(auto-fill, minmax(280px, 1fr));
+
+    gap: 24px;
+}
+
+
+/* ==========================================
+   EMPTY
+========================================== */
+
+.course-list-empty {
+    display: flex;
+    flex-direction: column;
+
+    align-items: center;
+    justify-content: center;
+
+    min-height: 250px;
+
+    background: #ffffff;
+
+    border: 1px solid #e5e7eb;
+    border-radius: 12px;
+
+    color: #6b7280;
+
+    text-align: center;
+}
+
+
+/* ==========================================
+   LOADING
+========================================== */
+
+.course-list-loading {
+    min-height: calc(100vh - 70px);
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    background: #f5f7fb;
+
+    color: #374151;
+}
+
+.course-list-loading h2 {
+    font-size: 20px;
+    font-weight: 500;
+}
+
+
+/* ==========================================
+   ERROR
+========================================== */
+
+.course-list-error {
+    max-width: 600px;
+
+    margin: 60px auto;
+
+    padding: 25px;
+
+    background: #ffffff;
+
+    border: 1px solid #fecaca;
+    border-radius: 12px;
+
+    text-align: center;
+}
+
+.course-list-error h2 {
+    margin-top: 0;
+
+    color: #dc2626;
+
+    font-size: 20px;
+}
+
+.course-list-error p {
+    margin-bottom: 0;
+
+    color: #6b7280;
+}
+
+
+/* ==========================================
+   RESPONSIVE
+========================================== */
+
+@media (max-width: 768px) {
+
+    .course-list-page {
+        padding: 30px 16px 40px;
+    }
+
+    .course-list-heading {
+        font-size: 26px;
+    }
+
+    .course-list-subtitle {
+        margin-bottom: 24px;
+    }
+
+    .course-list-grid {
+        grid-template-columns: 1fr;
+    }
+}
