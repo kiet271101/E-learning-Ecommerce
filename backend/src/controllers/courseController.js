@@ -164,8 +164,7 @@ const createCourse = async (
             title,
             slug,
             description,
-            price,
-            thumbnail
+            price
         } = req.body;
 
 
@@ -175,11 +174,21 @@ const createCourse = async (
         ) {
 
             return res.status(400).json({
+
                 success: false,
+
                 message:
                     "category_id và title là bắt buộc"
+
             });
+
         }
+
+
+        const thumbnail =
+            req.file
+                ? `/uploads/images/${req.file.filename}`
+                : null;
 
 
         const course =
@@ -200,6 +209,7 @@ const createCourse = async (
                     price,
 
                     thumbnail
+
                 });
 
 
@@ -211,6 +221,7 @@ const createCourse = async (
                 "Tạo khóa học thành công",
 
             data: course
+
         });
 
     } catch (error) {
@@ -219,9 +230,13 @@ const createCourse = async (
 
             success: false,
 
-            message: error.message
+            message:
+                error.message
+
         });
+
     }
+
 };
 
 
@@ -236,14 +251,24 @@ const updateCourse = async (
 
     try {
 
+        const data = {
+            ...req.body
+        };
+
+
+        if (req.file) {
+
+            data.thumbnail =
+                `/uploads/images/${req.file.filename}`;
+
+        }
+
+
         const course =
             await courseService
                 .updateCourse(
-
                     req.params.id,
-
-                    req.body,
-
+                    data,
                     req.user
                 );
 
@@ -256,6 +281,7 @@ const updateCourse = async (
                 "Cập nhật khóa học thành công",
 
             data: course
+
         });
 
     } catch (error) {
@@ -264,9 +290,61 @@ const updateCourse = async (
 
             success: false,
 
-            message: error.message
+            message:
+                error.message
+
         });
+
     }
+
+};
+
+// ==========================================
+// PATCH /api/courses/:id/publish
+// PUBLISH COURSE
+// ==========================================
+
+const publishCourse = async (
+    req,
+    res
+) => {
+
+    try {
+
+        const course =
+            await courseService.publishCourse(
+
+                req.params.id,
+
+                req.user
+
+            );
+
+
+        res.status(200).json({
+
+            success: true,
+
+            message:
+                "Đăng khóa học thành công",
+
+            data: course
+
+        });
+
+    } catch (error) {
+
+        res.status(400).json({
+
+            success: false,
+
+            message:
+                error.message
+
+        });
+
+    }
+
 };
 
 
@@ -317,5 +395,6 @@ module.exports = {
     getCourseById,
     createCourse,
     updateCourse,
+    publishCourse,
     deleteCourse
 };

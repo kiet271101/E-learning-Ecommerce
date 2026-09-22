@@ -8,70 +8,122 @@ function CourseCard({ course }) {
         navigate(`/courses/${course.id}`);
     };
 
+    // ==========================================
+    // THUMBNAIL URL
+    // ==========================================
+
+    const thumbnailUrl = course.thumbnail
+        ? course.thumbnail.startsWith("http")
+            ? course.thumbnail
+            : `http://localhost:5000${course.thumbnail}`
+        : null;
+
     return (
         <div className="course-card">
 
-            {/* THUMBNAIL */}
+            {/* ==========================================
+                THUMBNAIL
+            ========================================== */}
+
             <div className="course-card-thumbnail">
-                {course.thumbnail ? (
+
+                {thumbnailUrl ? (
+
                     <img
-                        src={course.thumbnail}
+                        src={thumbnailUrl}
                         alt={course.title}
                         className="course-card-image"
                     />
+
                 ) : (
+
                     <div className="course-card-no-image">
                         Không có hình ảnh
                     </div>
+
                 )}
+
             </div>
 
-            {/* CONTENT */}
+
+            {/* ==========================================
+                CONTENT
+            ========================================== */}
+
             <div className="course-card-content">
 
                 <h3 className="course-card-title">
                     {course.title}
                 </h3>
 
+
                 <p className="course-card-description">
+
                     {course.description
                         ? course.description.substring(0, 100)
                         : "Chưa có mô tả"}
+
                     {course.description &&
                         course.description.length > 100 &&
                         "..."}
+
                 </p>
 
-                {/* CATEGORY */}
+
+                {/* ==========================================
+                    CATEGORY
+                ========================================== */}
+
                 {course.category && (
+
                     <p className="course-card-info">
+
                         <span className="course-card-label">
                             Danh mục:
                         </span>{" "}
+
                         {course.category.name}
+
                     </p>
+
                 )}
 
-                {/* TEACHER */}
+
+                {/* ==========================================
+                    TEACHER
+                ========================================== */}
+
                 {course.teacher && (
+
                     <p className="course-card-info">
+
                         <span className="course-card-label">
                             Giảng viên:
                         </span>{" "}
+
                         {course.teacher.name}
+
                     </p>
+
                 )}
 
-                {/* BOTTOM */}
+
+                {/* ==========================================
+                    BOTTOM
+                ========================================== */}
+
                 <div className="course-card-bottom">
 
                     <strong className="course-card-price">
+
                         {Number(course.price) === 0
                             ? "Miễn phí"
                             : `${Number(
                                 course.price
                             ).toLocaleString("vi-VN")} đ`}
+
                     </strong>
+
 
                     <button
                         type="button"

@@ -49,8 +49,8 @@ function MyCourses() {
                 Array.isArray(data)
                     ? data
                     : data.courses ||
-                      data.data ||
-                      [];
+                    data.data ||
+                    [];
 
             setCourses(courseList);
 
@@ -173,13 +173,13 @@ function MyCourses() {
                                         <img
                                             src={
                                                 course.thumbnail
+                                                    ? course.thumbnail.startsWith("http")
+                                                        ? course.thumbnail
+                                                        : `http://localhost:5000${course.thumbnail}`
+                                                    : "/images/course-placeholder.jpg"
                                             }
-                                            alt={
-                                                course.title
-                                            }
-                                            style={
-                                                styles.image
-                                            }
+                                            className="course-detail-image"
+                                            alt={course.title}
                                         />
 
                                     ) : (

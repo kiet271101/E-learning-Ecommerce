@@ -2,6 +2,7 @@ const multer = require("multer");
 const path = require("path");
 const fs = require("fs");
 
+
 // ==========================================
 // CREATE UPLOAD DIRECTORIES
 // ==========================================
@@ -21,9 +22,18 @@ const imageDir = path.join(
     "../../uploads/images"
 );
 
-fs.mkdirSync(videoDir, { recursive: true });
-fs.mkdirSync(documentDir, { recursive: true });
-fs.mkdirSync(imageDir, { recursive: true });
+
+fs.mkdirSync(videoDir, {
+    recursive: true
+});
+
+fs.mkdirSync(documentDir, {
+    recursive: true
+});
+
+fs.mkdirSync(imageDir, {
+    recursive: true
+});
 
 
 // ==========================================
@@ -33,14 +43,17 @@ fs.mkdirSync(imageDir, { recursive: true });
 const videoStorage = multer.diskStorage({
 
     destination: function (req, file, cb) {
+
         cb(null, videoDir);
+
     },
 
     filename: function (req, file, cb) {
 
         const ext =
-            path.extname(file.originalname)
-                .toLowerCase();
+            path.extname(
+                file.originalname
+            ).toLowerCase();
 
         const filename =
             Date.now() +
@@ -49,6 +62,7 @@ const videoStorage = multer.diskStorage({
             ext;
 
         cb(null, filename);
+
     }
 
 });
@@ -58,18 +72,26 @@ const videoStorage = multer.diskStorage({
 // VIDEO FILTER
 // ==========================================
 
-const videoFilter = (req, file, cb) => {
+const videoFilter = (
+    req,
+    file,
+    cb
+) => {
 
     const allowedMimeTypes = [
+
         "video/mp4",
         "video/mpeg",
         "video/webm",
         "video/quicktime",
         "video/x-msvideo",
         "video/x-matroska"
+
     ];
 
+
     const allowedExtensions = [
+
         ".mp4",
         ".mpeg",
         ".mpg",
@@ -77,17 +99,27 @@ const videoFilter = (req, file, cb) => {
         ".mov",
         ".avi",
         ".mkv"
+
     ];
 
+
     const extension =
-        path.extname(file.originalname)
-            .toLowerCase();
+        path.extname(
+            file.originalname
+        ).toLowerCase();
+
 
     if (
-        allowedMimeTypes.includes(file.mimetype) ||
-        allowedExtensions.includes(extension)
+        allowedMimeTypes.includes(
+            file.mimetype
+        ) ||
+        allowedExtensions.includes(
+            extension
+        )
     ) {
+
         cb(null, true);
+
     } else {
 
         cb(
@@ -108,14 +140,17 @@ const videoFilter = (req, file, cb) => {
 const documentStorage = multer.diskStorage({
 
     destination: function (req, file, cb) {
+
         cb(null, documentDir);
+
     },
 
     filename: function (req, file, cb) {
 
         const ext =
-            path.extname(file.originalname)
-                .toLowerCase();
+            path.extname(
+                file.originalname
+            ).toLowerCase();
 
         const filename =
             Date.now() +
@@ -124,6 +159,7 @@ const documentStorage = multer.diskStorage({
             ext;
 
         cb(null, filename);
+
     }
 
 });
@@ -133,7 +169,11 @@ const documentStorage = multer.diskStorage({
 // DOCUMENT FILTER
 // ==========================================
 
-const documentFilter = (req, file, cb) => {
+const documentFilter = (
+    req,
+    file,
+    cb
+) => {
 
     const allowedMimeTypes = [
 
@@ -161,7 +201,9 @@ const documentFilter = (req, file, cb) => {
 
     ];
 
+
     const allowedExtensions = [
+
         ".pdf",
         ".doc",
         ".docx",
@@ -171,15 +213,23 @@ const documentFilter = (req, file, cb) => {
         ".xlsx",
         ".zip",
         ".txt"
+
     ];
 
+
     const extension =
-        path.extname(file.originalname)
-            .toLowerCase();
+        path.extname(
+            file.originalname
+        ).toLowerCase();
+
 
     if (
-        allowedMimeTypes.includes(file.mimetype) ||
-        allowedExtensions.includes(extension)
+        allowedMimeTypes.includes(
+            file.mimetype
+        ) ||
+        allowedExtensions.includes(
+            extension
+        )
     ) {
 
         cb(null, true);
@@ -198,7 +248,100 @@ const documentFilter = (req, file, cb) => {
 
 
 // ==========================================
-// MULTER
+// IMAGE STORAGE
+// ==========================================
+
+const imageStorage = multer.diskStorage({
+
+    destination: function (req, file, cb) {
+
+        cb(null, imageDir);
+
+    },
+
+    filename: function (req, file, cb) {
+
+        const ext =
+            path.extname(
+                file.originalname
+            ).toLowerCase();
+
+        const filename =
+            "course-" +
+            Date.now() +
+            "-" +
+            Math.round(Math.random() * 1E9) +
+            ext;
+
+        cb(null, filename);
+
+    }
+
+});
+
+
+// ==========================================
+// IMAGE FILTER
+// ==========================================
+
+const imageFilter = (
+    req,
+    file,
+    cb
+) => {
+
+    const allowedMimeTypes = [
+
+        "image/jpeg",
+        "image/jpg",
+        "image/png",
+        "image/webp"
+
+    ];
+
+
+    const allowedExtensions = [
+
+        ".jpg",
+        ".jpeg",
+        ".png",
+        ".webp"
+
+    ];
+
+
+    const extension =
+        path.extname(
+            file.originalname
+        ).toLowerCase();
+
+
+    if (
+        allowedMimeTypes.includes(
+            file.mimetype
+        ) &&
+        allowedExtensions.includes(
+            extension
+        )
+    ) {
+
+        cb(null, true);
+
+    } else {
+
+        cb(
+            new Error(
+                "Ảnh khóa học chỉ chấp nhận JPG, JPEG, PNG hoặc WEBP."
+            )
+        );
+
+    }
+
+};
+
+
+// ==========================================
+// MULTER VIDEO
 // ==========================================
 
 const uploadVideo = multer({
@@ -208,11 +351,20 @@ const uploadVideo = multer({
     fileFilter: videoFilter,
 
     limits: {
-        fileSize: 1024 * 1024 * 1024
+
+        fileSize:
+            1024 *
+            1024 *
+            1024
+
     }
 
 });
 
+
+// ==========================================
+// MULTER DOCUMENT
+// ==========================================
 
 const uploadDocument = multer({
 
@@ -221,7 +373,35 @@ const uploadDocument = multer({
     fileFilter: documentFilter,
 
     limits: {
-        fileSize: 100 * 1024 * 1024
+
+        fileSize:
+            100 *
+            1024 *
+            1024
+
+    }
+
+});
+
+
+// ==========================================
+// MULTER IMAGE
+// ==========================================
+
+const uploadImage = multer({
+
+    storage: imageStorage,
+
+    fileFilter: imageFilter,
+
+    limits: {
+
+        // 5 MB
+        fileSize:
+            5 *
+            1024 *
+            1024
+
     }
 
 });
@@ -232,6 +412,11 @@ const uploadDocument = multer({
 // ==========================================
 
 module.exports = {
+
     uploadVideo,
-    uploadDocument
+
+    uploadDocument,
+
+    uploadImage
+
 };

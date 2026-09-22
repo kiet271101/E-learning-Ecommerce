@@ -5,6 +5,8 @@ import {
     registerController
 } from "../../controllers/authController";
 
+import "../../styles/Register.css";
+
 function Register() {
 
     const navigate = useNavigate();
@@ -19,6 +21,7 @@ function Register() {
 
     const [loading, setLoading] = useState(false);
 
+
     // ==========================================
     // HANDLE CHANGE
     // ==========================================
@@ -29,7 +32,9 @@ function Register() {
             ...form,
             [e.target.name]: e.target.value
         });
+
     };
+
 
     // ==========================================
     // SUBMIT
@@ -50,7 +55,10 @@ function Register() {
 
         if (!result.success) {
 
-            setMessage(result.message);
+            setMessage(
+                result.message ||
+                "Đăng ký thất bại."
+            );
 
             return;
         }
@@ -62,131 +70,204 @@ function Register() {
         setTimeout(() => {
             navigate("/login");
         }, 1000);
+
     };
 
+
+    // ==========================================
+    // RENDER
+    // ==========================================
+
     return (
-        <div style={styles.container}>
 
-            <div style={styles.formBox}>
+        <div className="register-page">
 
-                <h1>Đăng ký</h1>
+            <div className="register-container">
 
-                <form onSubmit={handleSubmit}>
+                {/* ==================================
+                    HEADER
+                ================================== */}
 
-                    <div style={styles.field}>
+                <div className="register-header">
 
-                        <label>
+                    <div className="register-logo">
+                        E-Learning
+                    </div>
+
+                    <h1 className="register-title">
+                        Đăng ký
+                    </h1>
+
+                    <p className="register-subtitle">
+                        Tạo tài khoản để bắt đầu học tập
+                    </p>
+
+                </div>
+
+
+                {/* ==================================
+                    FORM
+                ================================== */}
+
+                <form
+                    className="register-form"
+                    onSubmit={handleSubmit}
+                >
+
+                    {/* HỌ VÀ TÊN */}
+
+                    <div className="register-field">
+
+                        <label
+                            htmlFor="name"
+                            className="register-label"
+                        >
                             Họ và tên
                         </label>
 
                         <input
+                            id="name"
                             type="text"
                             name="name"
                             value={form.name}
                             onChange={handleChange}
+                            placeholder="Nhập họ và tên"
+                            className="register-input"
+                            autoComplete="name"
                             required
                         />
 
                     </div>
 
-                    <div style={styles.field}>
 
-                        <label>
+                    {/* EMAIL */}
+
+                    <div className="register-field">
+
+                        <label
+                            htmlFor="email"
+                            className="register-label"
+                        >
                             Email
                         </label>
 
                         <input
+                            id="email"
                             type="email"
                             name="email"
                             value={form.email}
                             onChange={handleChange}
+                            placeholder="Nhập email của bạn"
+                            className="register-input"
+                            autoComplete="email"
                             required
                         />
 
                     </div>
 
-                    <div style={styles.field}>
 
-                        <label>
+                    {/* MẬT KHẨU */}
+
+                    <div className="register-field">
+
+                        <label
+                            htmlFor="password"
+                            className="register-label"
+                        >
                             Mật khẩu
                         </label>
 
                         <input
+                            id="password"
                             type="password"
                             name="password"
                             value={form.password}
                             onChange={handleChange}
+                            placeholder="Nhập mật khẩu"
+                            className="register-input"
+                            autoComplete="new-password"
                             required
                         />
 
                     </div>
 
+
+                    {/* MESSAGE */}
+
+                    {message && (
+
+                        <div
+                            className={
+                                message.includes("thành công")
+                                    ? "register-message register-message-success"
+                                    : "register-message"
+                            }
+                        >
+                            {message}
+                        </div>
+
+                    )}
+
+
+                    {/* REGISTER BUTTON */}
+
                     <button
                         type="submit"
+                        className="register-submit-button"
                         disabled={loading}
                     >
+
                         {loading
                             ? "Đang đăng ký..."
                             : "Đăng ký"}
+
                     </button>
 
                 </form>
 
-                {message && (
-                    <p style={styles.message}>
-                        {message}
-                    </p>
-                )}
 
-                <p>
-                    Đã có tài khoản?{" "}
+                {/* ==================================
+                    LOGIN
+                ================================== */}
 
-                    <span
-                        style={styles.link}
+                <div className="register-login">
+
+                    <span>
+                        Đã có tài khoản?
+                    </span>
+
+                    <button
+                        type="button"
+                        className="register-login-button"
                         onClick={() =>
                             navigate("/login")
                         }
                     >
                         Đăng nhập
-                    </span>
+                    </button>
 
-                </p>
+                </div>
+
+
+                {/* ==================================
+                    HOME
+                ================================== */}
+
+                <button
+                    type="button"
+                    className="register-home-button"
+                    onClick={() =>
+                        navigate("/")
+                    }
+                >
+                    ← Quay lại trang chủ
+                </button>
 
             </div>
 
         </div>
+
     );
 }
-
-const styles = {
-
-    container: {
-        minHeight: "100vh",
-        display: "flex",
-        justifyContent: "center",
-        alignItems: "center"
-    },
-
-    formBox: {
-        width: "400px",
-        background: "#fff",
-        padding: "30px",
-        borderRadius: "10px",
-        boxShadow: "0 5px 20px rgba(0,0,0,0.1)"
-    },
-
-    field: {
-        marginBottom: "15px"
-    },
-
-    link: {
-        cursor: "pointer",
-        textDecoration: "underline"
-    },
-
-    message: {
-        marginTop: "15px"
-    }
-};
 
 export default Register;

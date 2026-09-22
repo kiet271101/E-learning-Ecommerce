@@ -486,20 +486,22 @@ const StudentDashboard = () => {
                                                 <img
                                                     src={
                                                         course.thumbnail
-                                                    }
-                                                    alt={
-                                                        course.title
+                                                            ? course.thumbnail.startsWith("http")
+                                                                ? course.thumbnail
+                                                                : `http://localhost:5000${course.thumbnail}`
+                                                            : "/images/course-placeholder.jpg"
                                                     }
                                                     className="student-dashboard-thumbnail-image"
+                                                    alt={course.title}
                                                 />
 
                                             ) : (
 
-                                                <div
-                                                    className="student-dashboard-thumbnail-fallback"
-                                                >
-                                                    📚
-                                                </div>
+                                            <div
+                                                className="student-dashboard-thumbnail-fallback"
+                                            >
+                                                📚
+                                            </div>
 
                                             )}
 

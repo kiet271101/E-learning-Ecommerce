@@ -78,6 +78,20 @@ const updateCourse = async (
     return response.data;
 };
 
+// ==========================================
+// PUBLISH COURSE
+// ==========================================
+
+const publishCourse = async (courseId) => {
+
+    const response =
+        await api.patch(
+            `/courses/${courseId}/publish`
+        );
+
+    return response.data;
+};
+
 
 // ==========================================
 // DELETE COURSE
@@ -102,6 +116,7 @@ export default {
     getCourseById,
     createCourse,
     updateCourse,
+    publishCourse,
     deleteCourse
 
 };

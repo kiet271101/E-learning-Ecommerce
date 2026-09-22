@@ -698,16 +698,24 @@ function CourseDetail() {
                         {course.thumbnail ? (
 
                             <img
-                                src={course.thumbnail}
-                                alt={course.title}
+                                src={
+                                    course.thumbnail
+                                        ? course.thumbnail.startsWith("http")
+                                            ? course.thumbnail
+                                            : `http://localhost:5000${course.thumbnail}`
+                                        : "/images/course-placeholder.jpg"
+                                }
                                 className="course-detail-image"
+                                alt={course.title}
                             />
+                                
+
 
                         ) : (
 
-                            <div className="course-detail-no-image">
-                                Không có hình ảnh
-                            </div>
+                        <div className="course-detail-no-image">
+                            Không có hình ảnh
+                        </div>
 
                         )}
 

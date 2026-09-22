@@ -389,6 +389,91 @@ const updateCourse = async (
     return course;
 };
 
+// ==========================================
+// PUBLISH COURSE
+// Giáo viên đăng khóa học
+// draft -> published
+// ==========================================
+
+const publishCourse = async (
+    id,
+    user
+) => {
+
+    const course =
+        await Course.findByPk(id);
+
+
+    // --------------------------------------
+    // 1. Không tìm thấy khóa học
+    // --------------------------------------
+
+    if (!course) {
+
+        throw new Error(
+            "Không tìm thấy khóa học"
+        );
+
+    }
+
+
+    // --------------------------------------
+    // 2. Teacher chỉ được publish
+    //    khóa học của chính mình
+    // --------------------------------------
+
+    if (
+        user.role === "teacher" &&
+        course.teacher_id !== user.id
+    ) {
+
+        throw new Error(
+            "Bạn không có quyền đăng khóa học này"
+        );
+
+    }
+
+
+    // --------------------------------------
+    // 3. Kiểm tra trạng thái
+    // --------------------------------------
+
+    if (course.status === "published") {
+
+        throw new Error(
+            "Khóa học đã được đăng"
+        );
+
+    }
+
+
+    // --------------------------------------
+    // 4. Chỉ cho publish từ draft
+    // --------------------------------------
+
+    if (course.status !== "draft") {
+
+        throw new Error(
+            `Không thể đăng khóa học đang ở trạng thái "${course.status}"`
+        );
+
+    }
+
+
+    // --------------------------------------
+    // 5. Publish
+    // --------------------------------------
+
+    await course.update({
+
+        status: "published"
+
+    });
+
+
+    return course;
+};
+
 
 // ==========================================
 // DELETE COURSE
@@ -686,5 +771,6 @@ module.exports = {
     getCourseById,
     createCourse,
     updateCourse,
+    publishCourse,
     deleteCourse
 };

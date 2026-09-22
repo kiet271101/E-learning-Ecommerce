@@ -1,4 +1,6 @@
 const express = require("express");
+const path = require("path");
+const fs = require("fs");
 const cors = require("cors");
 
 require("./models");
@@ -18,7 +20,10 @@ const app = express();
 
 app.use(cors());
 
-// Chỉ dùng cho JSON API thông thường
+// ==========================================
+// BODY PARSER
+// ==========================================
+
 app.use(express.json({
     limit: "10mb"
 }));
@@ -29,19 +34,62 @@ app.use(express.urlencoded({
 }));
 
 // ==========================================
+// UPLOADS
+// ==========================================
+
+const uploadFolder = path.join(__dirname, "../uploads");
+const imageFolder = path.join(uploadFolder, "images");
+
+// Kiểm tra thư mục upload
+console.log("==========================================");
+console.log("UPLOAD CONFIGURATION");
+console.log("==========================================");
+
+console.log("Upload folder:", uploadFolder);
+console.log("Upload folder exists:", fs.existsSync(uploadFolder));
+
+console.log("Image folder:", imageFolder);
+console.log("Image folder exists:", fs.existsSync(imageFolder));
+
+if (fs.existsSync(imageFolder)) {
+    console.log("Images:", fs.readdirSync(imageFolder));
+} else {
+    console.log("Images: Folder does not exist");
+}
+
+// Cho phép truy cập các file trong thư mục uploads
+app.use(
+    "/uploads",
+    express.static(uploadFolder)
+);
+
+// ==========================================
 // ROUTES
 // ==========================================
 
 app.use("/api/auth", authRoutes);
+
 app.use("/api/categories", categoryRoutes);
+
 app.use("/api/courses", courseRoutes);
+
 app.use("/api/lessons", lessonRoutes);
+
 app.use("/api/materials", materialRoutes);
+
 app.use("/api/enrollments", enrollmentRoutes);
+
 app.use("/api/orders", orderRoutes);
+
 app.use("/api/payments", paymentRoutes);
+
 app.use("/api/progress", lessonProgressRoutes);
+
 app.use("/api/reviews", reviewRoutes);
+
+// ==========================================
+// API TEST
+// ==========================================
 
 app.get("/api", (req, res) => {
     res.json({

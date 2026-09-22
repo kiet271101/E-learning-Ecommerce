@@ -275,9 +275,15 @@ function TeacherCourseList() {
                                         {course.thumbnail ? (
 
                                             <img
-                                                src={course.thumbnail}
+                                                src={
+                                                    course.thumbnail
+                                                        ? course.thumbnail.startsWith("http")
+                                                            ? course.thumbnail
+                                                            : `http://localhost:5000${course.thumbnail}`
+                                                        : "/images/course-placeholder.jpg"
+                                                }
+                                                className="course-detail-image"
                                                 alt={course.title}
-                                                style={styles.thumbnail}
                                             />
 
                                         ) : (

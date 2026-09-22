@@ -104,6 +104,31 @@ export const updateTeacherCourseController =
         }
     };
 
+    // ==========================================
+// PUBLISH COURSE
+// ==========================================
+
+export const publishTeacherCourseController =
+    async (courseId) => {
+
+        try {
+
+            return await courseService.publishCourse(
+                courseId
+            );
+
+        } catch (error) {
+
+            console.error(
+                "publishTeacherCourseController error:",
+                error
+            );
+
+            throw error;
+
+        }
+    };
+
 
 // ==========================================
 // DELETE COURSE

@@ -5,6 +5,8 @@ import {
     loginController
 } from "../../controllers/authController";
 
+import "../../styles/Login.css";
+
 function Login() {
 
     const navigate = useNavigate();
@@ -18,6 +20,7 @@ function Login() {
 
     const [loading, setLoading] = useState(false);
 
+
     // ==========================================
     // CHANGE
     // ==========================================
@@ -28,7 +31,9 @@ function Login() {
             ...form,
             [e.target.name]: e.target.value
         });
+
     };
+
 
     // ==========================================
     // LOGIN
@@ -49,121 +54,183 @@ function Login() {
 
         if (!result.success) {
 
-            setMessage(result.message);
+            setMessage(
+                result.message ||
+                "Đăng nhập thất bại."
+            );
 
             return;
         }
 
         navigate("/courses");
+
     };
 
+
+    // ==========================================
+    // RENDER
+    // ==========================================
+
     return (
-        <div style={styles.container}>
 
-            <div style={styles.formBox}>
+        <div className="login-page">
 
-                <h1>Đăng nhập</h1>
+            <div className="login-container">
 
-                <form onSubmit={handleSubmit}>
+                {/* ==================================
+                    LOGIN HEADER
+                ================================== */}
 
-                    <div style={styles.field}>
+                <div className="login-header">
 
-                        <label>
+                    <div className="login-logo">
+                        E-Learning
+                    </div>
+
+                    <h1 className="login-title">
+                        Đăng nhập
+                    </h1>
+
+                    <p className="login-subtitle">
+                        Đăng nhập để tiếp tục học tập
+                    </p>
+
+                </div>
+
+
+                {/* ==================================
+                    FORM
+                ================================== */}
+
+                <form
+                    className="login-form"
+                    onSubmit={handleSubmit}
+                >
+
+                    {/* EMAIL */}
+
+                    <div className="login-field">
+
+                        <label
+                            htmlFor="email"
+                            className="login-label"
+                        >
                             Email
                         </label>
 
                         <input
+                            id="email"
                             type="email"
                             name="email"
                             value={form.email}
                             onChange={handleChange}
+                            placeholder="Nhập email của bạn"
+                            className="login-input"
+                            autoComplete="email"
                             required
                         />
 
                     </div>
 
-                    <div style={styles.field}>
 
-                        <label>
+                    {/* PASSWORD */}
+
+                    <div className="login-field">
+
+                        <label
+                            htmlFor="password"
+                            className="login-label"
+                        >
                             Mật khẩu
                         </label>
 
                         <input
+                            id="password"
                             type="password"
                             name="password"
                             value={form.password}
                             onChange={handleChange}
+                            placeholder="Nhập mật khẩu"
+                            className="login-input"
+                            autoComplete="current-password"
                             required
                         />
 
                     </div>
 
+
+                    {/* ERROR */}
+
+                    {message && (
+
+                        <div className="login-message">
+
+                            {message}
+
+                        </div>
+
+                    )}
+
+
+                    {/* BUTTON */}
+
                     <button
                         type="submit"
+                        className="login-submit-button"
                         disabled={loading}
                     >
+
                         {loading
                             ? "Đang đăng nhập..."
                             : "Đăng nhập"}
+
                     </button>
 
                 </form>
 
-                {message && (
-                    <p style={styles.message}>
-                        {message}
-                    </p>
-                )}
 
-                <p>
-                    Chưa có tài khoản?{" "}
+                {/* ==================================
+                    REGISTER
+                ================================== */}
 
-                    <span
-                        style={styles.link}
+                <div className="login-register">
+
+                    <span>
+                        Chưa có tài khoản?
+                    </span>
+
+                    <button
+                        type="button"
+                        className="login-register-button"
                         onClick={() =>
                             navigate("/register")
                         }
                     >
                         Đăng ký
-                    </span>
+                    </button>
 
-                </p>
+                </div>
+
+
+                {/* ==================================
+                    BACK TO HOME
+                ================================== */}
+
+                <button
+                    type="button"
+                    className="login-home-button"
+                    onClick={() =>
+                        navigate("/")
+                    }
+                >
+                    ← Quay lại trang chủ
+                </button>
 
             </div>
 
         </div>
+
     );
 }
-
-const styles = {
-
-    container: {
-        minHeight: "100vh",
-        display: "flex",
-        justifyContent: "center",
-        alignItems: "center"
-    },
-
-    formBox: {
-        width: "400px",
-        background: "#fff",
-        padding: "30px",
-        borderRadius: "10px",
-        boxShadow: "0 5px 20px rgba(0,0,0,0.1)"
-    },
-
-    field: {
-        marginBottom: "15px"
-    },
-
-    link: {
-        cursor: "pointer",
-        textDecoration: "underline"
-    },
-
-    message: {
-        marginTop: "15px"
-    }
-};
 
 export default Login;

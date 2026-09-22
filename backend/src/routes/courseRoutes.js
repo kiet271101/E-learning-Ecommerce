@@ -14,6 +14,8 @@ const {
 
     updateCourse,
 
+    publishCourse,
+
     deleteCourse
 
 } = require("../controllers/courseController");
@@ -26,6 +28,9 @@ const authMiddleware =
 const roleMiddleware =
     require("../middleware/roleMiddleware");
 
+const {
+    uploadImage
+} = require("../middleware/uploadMiddleware");
 
 const router =
     express.Router();
@@ -106,6 +111,7 @@ router.post(
         "teacher",
         "admin"
     ),
+    uploadImage.single("thumbnail"),
     createCourse
 );
 
@@ -119,7 +125,24 @@ router.put(
         "teacher",
         "admin"
     ),
+    uploadImage.single("thumbnail"),
     updateCourse
+);
+
+// ==========================================
+// PUBLISH COURSE
+// ==========================================
+
+// PATCH /api/courses/:id/publish
+
+router.patch(
+    "/:id/publish",
+    authMiddleware,
+    roleMiddleware(
+        "teacher",
+        "admin"
+    ),
+    publishCourse
 );
 
 
